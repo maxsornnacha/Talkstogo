@@ -1190,11 +1190,11 @@ export default function talkingroom(){
       
 
       useEffect(()=>{
-        const handleCreateAnswer = async ({offers , NO , roomEntering , roomUpdated})=>{ 
+        const handleCreateAnswer =  ({offers , NO , roomEntering , roomUpdated})=>{ 
 
           //Check if userNO and myStream are exit
           if(userNO && myStream){
-           offers.forEach((object)=>{
+           offers.forEach( async (object)=>{
             // Check if the offer is send to me , and the offer is not created from me
               if(object.to === me && object.from !== me){
                   const peer = new Peer({
@@ -1229,22 +1229,23 @@ export default function talkingroom(){
                       
                      }
                   })
+
+                   //Create non-init peer according to the number of offers that got
+                   setNonInitPeer((prev)=>[...prev , {from:me , to:object.from , peer:peer}])
                   //connect or signal to the offer that got sent
-                  peer.signal(object.offer)
-                  //stream to the offer creator or init peer
-                  peer.on('stream',(stream)=>{
-                    if(remoteAudioRefs.current[NO]){
-                     remoteAudioRefs.current[NO].srcObject = stream
-                    }
-                  })
-                  //Create non-init peer according to the number of offers that got
-                  setNonInitPeer((prev)=>[...prev , {from:me , to:object.to , peer:peer}])
+                 peer.signal(object.offer)
+
+                 //Peer stream
+                 peer.on('stream',(stream)=>{
+                  setNonInitPeer((prev)=>[...prev , {from:me , to:object.from , peer:peer , stream:stream}])
+                 })
+                  
                   //Send to the each init peer not in array, because send to each individual offer peer
                   peer.on('signal',(signal)=>{
-                    socket.emit('answer-got-send',{answer:signal, from:me, userNO:userNO.current, to:object.from , roomEntering:roomEntering , roomUpdated:roomUpdated})
+                    socket.emit('answer-got-send',{nonInitpeer:peer , initNO:NO , answer:signal, from:me, userNO:userNO.current, to:object.from , roomEntering:roomEntering , roomUpdated:roomUpdated})
                   })
+          
                   
-     
               }
 
            })
@@ -1263,10 +1264,10 @@ export default function talkingroom(){
 
 
       useEffect(()=>{
-        const handleAcceptAnswer = async ({answer, from, userNO, to , roomEntering , roomUpdated})=>{
+        const handleAcceptAnswer = async ({answer, from, userNO, to , roomEntering , roomUpdated , initNO})=>{
 
           //Check if the answer send back to me 
-          if(to === me && initPeer){
+          if(to === me && initPeer.length > 0){
             //ถ้าเราเป็นคนสุดท้ายที่เข้าจะ ทำการปิดการ loading เมื่อเชื่อต่อเสร็จแล้ว //ส่วนคนที่ไม่ใช่จะมีการแจ้งเตือน
             setConnecting(false);
             playSound();
@@ -1280,6 +1281,8 @@ export default function talkingroom(){
 
                   object.peer.on('stream',(stream)=>{
                     if(remoteAudioRefs.current[userNO]){
+                      console.log(stream)
+                      console.log(remoteAudioRefs.current[userNO])
                      remoteAudioRefs.current[userNO].srcObject = stream
                     }
 
@@ -1293,12 +1296,7 @@ export default function talkingroom(){
             playSound();
             setWhichTalkingRoomAmIIn(roomEntering);
             setRoom(roomUpdated);
-            Swal.fire({
-              text:`There is a new user joning room : '${roomEntering[0].roomName}'`,
-              showConfirmButton: false,
-              timer: 1500,
-              position: "top"
-          })
+            socket.emit('non-init-peer-stream-to-init',{initNO:initNO , senderID:me , to:to})
           }
 
 
@@ -1311,7 +1309,42 @@ export default function talkingroom(){
           }
 
 
-      },[whichTalkingRoomAmIIn , me , initPeer])
+      },[whichTalkingRoomAmIIn , me , initPeer , room , nonInitpeer])
+
+      useEffect(() => {
+        const nonInitPeerStreamToInit = ({ initNO, senderID, to }) => {
+
+  
+          if (senderID === me && nonInitpeer.length > 0) {
+            if ( remoteAudioRefs.current[initNO]) {
+              // Stream to the offer creator or init peer
+              nonInitpeer.forEach((object) => {
+                if (object.to === to) {
+                  remoteAudioRefs.current[initNO].srcObject = object.stream;
+                }
+              });
+              Swal.fire({
+                text:`A new user joining to the channel`,
+                showConfirmButton: false,
+                timer: 1500,
+                position:"top"
+              })
+            } else {
+              Swal.fire({
+                icon: 'error',
+                text: 'RemoteAudio is not initialized on the Non-init side',
+              });
+            }
+          }
+        };
+      
+        socket.on('non-init-peer-stream-to-init', nonInitPeerStreamToInit);
+      
+        return () => {
+          socket.off('non-init-peer-stream-to-init', nonInitPeerStreamToInit);
+        };
+      }, [whichTalkingRoomAmIIn, me, initPeer, room, nonInitpeer, myStream , remoteAudioRefs.current]);
+      
 
 
       const handleMicOff = ()=>{
