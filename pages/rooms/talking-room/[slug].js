@@ -439,47 +439,6 @@ export default function talkingroom(){
 
       },[room])
 
-      //เมื่อเข้าห้องพูดคุยนั้นๆ จะทำการอัพเดตห้องพูดคุย แบบ real-time
-      useEffect(()=>{
-        const handleUpdateRoomAfterEnterToTheRoom = async ({roomUpdated , senderID}) =>{
-          if(roomUpdated && senderID && userData){
-          if(room._id === roomUpdated._id){
-            setRoom(roomUpdated)
-
-            //เช็คว่าตอนเข้าห้องมี คนอยู่ในห้องมั้ย ถ้ามี คนที่อยู่ในห้องนั้นๆก็จะได้ยินเสียงด้วยเหมือนกัน
-            const roomEntering = await roomUpdated.talkingChannels.filter((talkingroom) => {
-              return talkingroom.participants.some((participant) => {
-                  return participant._id === senderID; 
-              });
-            })
-
-            if(roomEntering.length > 0 && senderID !== userData.accountData._id){
-              const isSameRoom = await roomEntering.filter((room)=>{
-                return room.participants.some((participant)=>{
-                  return participant._id === userData.accountData._id
-                })
-              })
- 
-              if(isSameRoom.length > 0){
-                //alert(JSON.stringify(roomEntering))
-                playSound()
-                if(whichTalkingRoomAmIIn){
-                  setWhichTalkingRoomAmIIn(roomEntering)
-                }
-              }
-            }
-
-          }
-          }
-        }
-
-        socket.on('enter-to-the-room',handleUpdateRoomAfterEnterToTheRoom)
-
-        return ()=>{
-          socket.off('enter-to-the-room',handleUpdateRoomAfterEnterToTheRoom)
-        }
-
-      },[room , userData])
 
         //เมื่อออกจากจากช่องพูดคุยนัั้นๆ จะทำการอัพเดตห้องพูดคุย แบบ real-time
         useEffect(()=>{
@@ -623,6 +582,7 @@ export default function talkingroom(){
             }
      
             setIsInRoom(true)
+            setRoom(response.data)
             await socket.emit('enter-to-the-room',{roomUpdated:response.data , senderID: userData.accountData._id})
 
             //เช็คว่าอยู่ห้องไหน
@@ -637,7 +597,7 @@ export default function talkingroom(){
           .catch((error)=>{
             Swal.fire({
              icon:'error',
-             title:'เกิดข้อผิดพลาด',
+             title:'Error entering to the talking channel',
              text:error
             })
             .then(()=>{
@@ -1082,118 +1042,161 @@ export default function talkingroom(){
           setMe(userData.accountData._id)
         }
       },[userData])
-      
-      //แยกว่าเราอยู่ห้องพูดคุยไหน
-      useEffect(()=>{
-        //ถ้าเราอยู่ในห้องแล้ว
-          if(whichTalkingRoomAmIIn && whichTalkingRoomAmIIn.length > 0 && LocalAudioRef.current){
-            playSound2();
 
-             //ถ้าเราเป็นคนสุดท้ายที่เข้าจะ ทำการเริ่ม loading เพื่อเชื่อมต่อ peer
-            if(whichTalkingRoomAmIIn[0].participants.length > 0){
-              if(whichTalkingRoomAmIIn[0].participants[whichTalkingRoomAmIIn[0].participants.length-1]._id === me){
-                setConnecting(true);
-              }
+        //When entering the talking channel
+        useEffect(()=>{
+          const handleUpdateRoomAfterEnterToTheRoom = async ({roomUpdated , senderID}) =>{
+            //When being in tha taking chanel
+            if(roomUpdated && senderID === userData.accountData._id && LocalAudioRef.current){
+
+                const roomEntering = await roomUpdated.talkingChannels.filter((talkingroom) => {
+                  return talkingroom.participants.some((participant) => {
+                      return participant._id === senderID; 
+                  });
+                })
+  
+            
+                //doing stream for myself
+             navigator.mediaDevices.getUserMedia({audio:audioInput?
+               {
+                 deviceId:{exact:audioInput},
+                 echoCancellation: true 
+               }
+               :
+               { echoCancellation: true }
+             })
+             .then(async (stream)=>{
+               if(LocalAudioRef.current){
+                   LocalAudioRef.current.srcObject = stream;
+                   setMyStream(stream); 
+                    //If i join in the room 
+                  setConnecting(true);        
+               }else {
+                 Swal.fire({
+                   icon:'error',
+                   text:'LocalAudioRef is not initialized'
+                 })
+               }
+             
+             // I , as a new user , will initiate init-peers to other users ( this is for sending to the others user in the same talking channel).
+             // Or you can say that all of init peers created belongs to this user
+             const peers = [];
+           
+             roomEntering[0].participants.forEach((user) =>{
+                 if(user._id !== me){
+ 
+                   const peer = new Peer({
+                     initiator:true,
+                     trickle:false,
+                     stream:stream,
+                     config: { iceServers: [
+                       {
+                         urls: "stun:stun.relay.metered.ca:80",
+                       },
+                       {
+                         urls: "turn:global.relay.metered.ca:80",
+                         username: "69f829afeb5224e9ddf75a31",
+                         credential: "MAfZhLk3cf3ncot1",
+                       },
+                       {
+                         urls: "turn:global.relay.metered.ca:80?transport=tcp",
+                         username: "69f829afeb5224e9ddf75a31",
+                         credential: "MAfZhLk3cf3ncot1",
+                       },
+                       {
+                         urls: "turn:global.relay.metered.ca:443",
+                         username: "69f829afeb5224e9ddf75a31",
+                         credential: "MAfZhLk3cf3ncot1",
+                       },
+                       {
+                         urls: "turns:global.relay.metered.ca:443?transport=tcp",
+                         username: "69f829afeb5224e9ddf75a31",
+                         credential: "MAfZhLk3cf3ncot1",
+                       },
+                     ]
+ 
+                      }
+                   })
+                   peers.push({from:me , to:user._id , peer:peer})
+        
+                 }
+ 
+             })
+             //This will be stored in only this user or my state
+             //After creating all of init-peers , the peers will be stored in State initPeer as an array, each index is object including to : who it is sent to , and peer : init-peer value object
+             setInitPeer(peers)
+ 
+ 
+             //Each init-peer that is going to be sent create offer SDP (session description protocal) as well as Ice candidates
+             const offers = []
+             peers.forEach((object)=>{
+               const signalPromise = new Promise((resolve) => {
+                 object.peer.on('signal', (signal) => {
+                   resolve({from:object.from ,  to: object.to, offer: signal });
+                 });
+             });
+             offers.push(signalPromise)
+             })
+ 
+             Promise.all(offers)
+             .then(async (offers) => {
+               if(offers.length > 0){
+                 //After created , all of the offer will be sent to the target users identified by to object in peer
+                 //in offers will store from , to , and offer in an object in Array named offers
+                 socket.emit('offer-got-send',{offers:offers , NO:userNO.current , roomEntering:roomEntering , roomUpdated:roomUpdated})
+               }else{
+                 socket.emit('offer-not-got-send',{roomUpdated:roomUpdated})
+                 //If there is on offer created or said that there are no other users in the talk, only me
+                 //The connecting loader will be finished
+                  //Update WhichTalkingRoomAmIIn for specific talking channel i am entering  
+                  setWhichTalkingRoomAmIIn(roomEntering)
+                  setConnecting(false);
+                  playSound();
+                 
+               }
+             })
+ 
+ 
+           })
+
             }
-            
-               //ทำการ stream audio ของเราเอง
-            navigator.mediaDevices.getUserMedia({audio:audioInput?
-              {
-                deviceId:{exact:audioInput},
-                echoCancellation: true 
-              }
-              :
-              { echoCancellation: true }
-            })
-            .then(async (stream)=>{
-              if(LocalAudioRef.current){
-                  LocalAudioRef.current.srcObject = stream;
-                  setMyStream(stream);         
-              }else {
-                console.error('LocalAudioRef is not initialized');
-              }
-            
-            // คนที่ไม่ใช้เราจะทำการสร้าง init peer ขึ้นมาใหม่
-            const peers = [];
-          
-            whichTalkingRoomAmIIn[0].participants.forEach((user) =>{
-                if(user._id !== me){
+          }
+  
+          socket.on('enter-to-the-room',handleUpdateRoomAfterEnterToTheRoom)
+  
+          return ()=>{
+            socket.off('enter-to-the-room',handleUpdateRoomAfterEnterToTheRoom)
+          }
+  
+        },[room , userData , me , LocalAudioRef.current])
 
-                  const peer = new Peer({
-                    initiator:true,
-                    trickle:false,
-                    stream:stream,
-                    config: { iceServers: [
-                      {
-                        urls: "stun:stun.relay.metered.ca:80",
-                      },
-                      {
-                        urls: "turn:global.relay.metered.ca:80",
-                        username: "69f829afeb5224e9ddf75a31",
-                        credential: "MAfZhLk3cf3ncot1",
-                      },
-                      {
-                        urls: "turn:global.relay.metered.ca:80?transport=tcp",
-                        username: "69f829afeb5224e9ddf75a31",
-                        credential: "MAfZhLk3cf3ncot1",
-                      },
-                      {
-                        urls: "turn:global.relay.metered.ca:443",
-                        username: "69f829afeb5224e9ddf75a31",
-                        credential: "MAfZhLk3cf3ncot1",
-                      },
-                      {
-                        urls: "turns:global.relay.metered.ca:443?transport=tcp",
-                        username: "69f829afeb5224e9ddf75a31",
-                        credential: "MAfZhLk3cf3ncot1",
-                      },
-                    ]
-
-                     }
-                  })
-                  peers.push({to:user._id , peer:peer})
-       
-                }
-
-            })
-
-            setInitPeer(peers)
-
-
-            const offers = []
-            peers.forEach((object)=>{
-              const signalPromise = new Promise((resolve) => {
-                object.peer.on('signal', (signal) => {
-                  resolve({ to: object.to, offer: signal });
-                });
-            });
-            offers.push(signalPromise)
-            })
-
-            Promise.all(offers)
-            .then((offers) => {
-              if(offers.length > 0){
-                socket.emit('offer-got-send',{offers:offers , from:me , NO:userNO.current})
-              }else{
-                setConnecting(false);
-              }
-            })
-
-
-          })
-
-            
-      }
-
-      },[whichTalkingRoomAmIIn, me , LocalAudioRef.current])
 
       useEffect(()=>{
-        const handleCreateAnswer = async ({offers , from , NO})=>{ 
+        const handleOfferNotGotSend  = ({roomUpdated}) =>{
+          //If there is only 1 user, the room will be updated
+          if(room._id === roomUpdated._id){
+            setRoom(roomUpdated)
+          }
 
+        }
 
-          if(from !== me && userNO && myStream){
+        socket.on('offer-not-got-send',handleOfferNotGotSend)
+
+        return ()=>{
+          socket.off('offer-not-got-send',handleOfferNotGotSend)
+        }
+
+      },[room])
+      
+
+      useEffect(()=>{
+        const handleCreateAnswer = async ({offers , NO , roomEntering , roomUpdated})=>{ 
+
+          //Check if userNO and myStream are exit
+          if(userNO && myStream){
            offers.forEach((object)=>{
-              if(object.to === me){
+            // Check if the offer is send to me , and the offer is not created from me
+              if(object.to === me && object.from !== me){
                   const peer = new Peer({
                     initiator:false,
                     trickle:false,
@@ -1226,15 +1229,19 @@ export default function talkingroom(){
                       
                      }
                   })
+                  //connect or signal to the offer that got sent
                   peer.signal(object.offer)
+                  //stream to the offer creator or init peer
                   peer.on('stream',(stream)=>{
                     if(remoteAudioRefs.current[NO]){
                      remoteAudioRefs.current[NO].srcObject = stream
                     }
                   })
-                  setNonInitPeer((prev)=>[...prev , {from:from , peer:peer}])
+                  //Create non-init peer according to the number of offers that got
+                  setNonInitPeer((prev)=>[...prev , {from:me , to:object.to , peer:peer}])
+                  //Send to the each init peer not in array, because send to each individual offer peer
                   peer.on('signal',(signal)=>{
-                    socket.emit('answer-got-send',{signal:signal, from:me, userNO:userNO.current, to:from})
+                    socket.emit('answer-got-send',{answer:signal, from:me, userNO:userNO.current, to:object.from , roomEntering:roomEntering , roomUpdated:roomUpdated})
                   })
                   
      
@@ -1256,28 +1263,20 @@ export default function talkingroom(){
 
 
       useEffect(()=>{
-        const handleAcceptAnswer = async ({signal, from, userNO, to})=>{
+        const handleAcceptAnswer = async ({answer, from, userNO, to , roomEntering , roomUpdated})=>{
 
+          //Check if the answer send back to me 
           if(to === me && initPeer){
             //ถ้าเราเป็นคนสุดท้ายที่เข้าจะ ทำการปิดการ loading เมื่อเชื่อต่อเสร็จแล้ว //ส่วนคนที่ไม่ใช่จะมีการแจ้งเตือน
-            if(whichTalkingRoomAmIIn[0].participants.length > 0){
-              if(whichTalkingRoomAmIIn[0].participants[whichTalkingRoomAmIIn[0].participants.length-1]._id !== me){
-                  Swal.fire({
-                      text:`There is a new user joning room : '${whichTalkingRoomAmIIn[0].roomName}'`,
-                      showConfirmButton: false,
-                      timer: 1500,
-                      position: "top"
-                  })
-              }
-              else if(whichTalkingRoomAmIIn[0].participants[whichTalkingRoomAmIIn[0].participants.length-1]._id === me){
-                setConnecting(false)
-              }
-            }
+            setConnecting(false);
+            playSound();
+            setWhichTalkingRoomAmIIn(roomEntering);
+            setRoom(roomUpdated);
 
-            
               initPeer.forEach((object)=>{
+                //check if the user whom this peer sent to is the same as the user that sent this answer
                 if(object.to === from){
-                  object.peer.signal(signal)
+                  object.peer.signal(answer)
 
                   object.peer.on('stream',(stream)=>{
                     if(remoteAudioRefs.current[userNO]){
@@ -1289,6 +1288,19 @@ export default function talkingroom(){
               })
 
           }
+          //Check if I was not the new user who just came in the talking channel
+          else if(from === me && nonInitpeer){
+            playSound();
+            setWhichTalkingRoomAmIIn(roomEntering);
+            setRoom(roomUpdated);
+            Swal.fire({
+              text:`There is a new user joning room : '${roomEntering[0].roomName}'`,
+              showConfirmButton: false,
+              timer: 1500,
+              position: "top"
+          })
+          }
+
 
         }
         
