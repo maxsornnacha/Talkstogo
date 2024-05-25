@@ -448,8 +448,8 @@ useEffect(()=>{
             {toggle === 'posts' && posts && posts.length > 0 &&
             posts.map((item,index)=>{
            return(
-           <div>
-                   <div className="mx-2 h-auto py-4 flex" key={item.postID}>
+           <div key={item.postID}>
+            <div className="mx-2 h-auto py-4 flex">
     
           {/* Section 4.1 */}
           {/* Profile image */}
@@ -481,7 +481,7 @@ useEffect(()=>{
             {showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1 &&
             <div className="flex flex-col bg-stone-800 py-2 absolute right-6">
              <div className="flex flex-row w-32 items-center text-white">
-            <LikeSystem userData={accountLogin} accountID={accountLogin.accountData.id} postID={item.postID} post={posts[index]} handleCloseMenuToggle={handleCloseMenuToggle}/>
+            <LikeSystem key={index} userData={accountLogin} accountID={accountLogin.accountData.id} postID={item.postID} post={posts[index]} handleCloseMenuToggle={handleCloseMenuToggle}/>
               </div>
             <span onClick={()=>{setToggleComment(item.postID); setShowMenuToggle(null);}} className="text-[0.75rem] text-center font-normal cursor-pointer hover:bg-stone-600  py-1">
                Comment

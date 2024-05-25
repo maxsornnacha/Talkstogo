@@ -2136,13 +2136,13 @@ export default function talkingroom(){
 
                                 <div className="grid grid-cols-12 w-[50vw] lg:w-[40vw]">
                                 {message.images.length === 1 &&
-                                 message.images.map((image) =>{
-                                    return <img src={image.image.secure_url} className="col-span-12 w-56 h-56 rounded-xl"/>
+                                 message.images.map((image,index) =>{
+                                    return <img src={image.image.secure_url} className="col-span-12 w-56 h-56 rounded-xl" key={index}/>
                                  })
                                 }
                                 {message.images.length > 1 &&
-                                 message.images.map((image) =>{
-                                    return <img src={image.image.secure_url} className="col-span-6 max-h-96 h-full p-1 w-full rounded-xl "/>
+                                 message.images.map((image,index) =>{
+                                    return <img src={image.image.secure_url} className="col-span-6 max-h-96 h-full p-1 w-full rounded-xl " key={index}/>
                                  })
                                 }
                                 {message.video &&
@@ -2283,13 +2283,13 @@ export default function talkingroom(){
 
                                 <div className="grid grid-cols-12 mt-3">
                                 {message.images.length === 1 &&
-                                 message.images.map((image) =>{
-                                    return <img src={image.image.secure_url} className="col-span-12 w-56 h-56 rounded-md"/>
+                                 message.images.map((image , index) =>{
+                                    return <img src={image.image.secure_url} className="col-span-12 w-56 h-56 rounded-md" key={index}/>
                                  })
                                 }
                                 {message.images.length > 1 &&
-                                 message.images.map((image) =>{
-                                    return <img src={image.image.secure_url} className="col-span-6 w-44 h-44  rounded-md "/>
+                                 message.images.map((image , index) =>{
+                                    return <img src={image.image.secure_url} className="col-span-6 w-44 h-44  rounded-md " key={index}/>
                                  })
                                 }
                                  {message.video &&

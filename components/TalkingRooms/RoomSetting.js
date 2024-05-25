@@ -9,11 +9,17 @@ import { io } from "socket.io-client"
 const socket = io(process.env.API_SOCKET_URL)
 import {playSound2} from "@/modules/modules"
 import LoaderPage from "../loader/LoaderPage";
-
+import AWS from 'aws-sdk'
 
 export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseRoomSettingCard,participants,admins,handleAudioInput}){
-    const router = useRouter()
 
+    AWS.config.update({
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+        region: process.env.S3_BUCKET_REGION
+      });
+
+    const router = useRouter()
     const [isAdmin, setIsAdmin] = useState(roomYouAreIn.admins.some((admin)=>admin.participant === userData.accountData._id) )
     const [isCreator, setIsCreator] = useState(roomYouAreIn.creator.some((creator)=>creator.participant === userData.accountData._id) )
     const [whichSetting,setWhichSetting] = useState(1)
@@ -344,16 +350,19 @@ export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseR
             }
         })
      }
+     
 
 
      const handleDeleteTheRoom = (event)=>{
         event.preventDefault()
+        let allPublic_ids = null;
         Swal.fire({
             icon:'warning',
             text:`Are you sure you want to delete the room '${roomYouAreIn.roomName}' ?`,
             showCancelButton: true
         })
         .then((status)=>{
+        
             if(status.isConfirmed){
                 Swal.fire({
                     text:`${roomYouAreIn.slug}`,
@@ -362,8 +371,9 @@ export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseR
                     showCancelButton: true 
                 })
                 .then((result)=>{
-                    if(result.isConfirmed){
 
+                    if(result.isConfirmed){
+                        
                     if(result.value === roomYouAreIn.slug){
                         Swal.fire({
                             text:'The confirmation message was successfully confirmed',
@@ -378,19 +388,73 @@ export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseR
                                 showCancelButton: true
                             })
                             .then((status)=>{
+                                const allMsg = roomYouAreIn.chatChannels.map((chatChannel)=>{
+                                    return chatChannel.messages
+                                }).flat();
+                    
+                                if(allMsg && allMsg.length > 0){
+                                    //All image from the room
+                                    const allImages = allMsg.filter(message => message.images.length > 0).map((message)=>{
+                                        return message.images
+                                    }).flat();
+                                    
+                                    if(allImages && allImages.length > 0){
+                                       allPublic_ids = allImages.map(image => image.image.public_id);
+                                    }else{
+                                        allPublic_ids = null;
+                                    }
+                                }
+
                                 if(status.isConfirmed) {
                                         setDeleteRoomLoading(true);
                                       //ออกจากห้อง participant
                                         axios.delete(`${process.env.API_URL}/room-deleting`,{
                                          data:{
                                             roomID:roomYouAreIn._id,
-                                            roomIcon:roomYouAreIn.roomIcon
+                                            roomIcon:roomYouAreIn.roomIcon,
+                                            allImagesID:allPublic_ids
                                          },
                                          headers:{
                                             Authorization: `Bearer ${userData.token_key}`
                                           }
                                         })
-                                        .then((response)=>{
+                                        .then(async (response)=>{
+                                        
+                                            if(allMsg && allMsg.length > 0){
+                                                
+                                            //Delete Video
+                                            const allVideoKeys = allMsg.filter(message => message.video).map((message)=>{
+                                                return message.video.Key
+                                            })
+                                            //Delete File
+                                            const allFileKeys = allMsg.filter(message => message.file).map((message)=>{
+                                                return message.file.key
+                                            })
+                                            
+                                            if(allVideoKeys && allVideoKeys.length > 0){
+                                            await allVideoKeys.forEach((key)=>{
+                                                const deleteParams = {
+                                                    Bucket: process.env.S3_BUCKET_NAME_VIDEO,
+                                                    Key: key
+                                                };
+                                                const s3 = new AWS.S3();
+                                                s3.deleteObject(deleteParams).promise();
+                                            })
+                                            }
+
+                                            if(allFileKeys && allFileKeys.length > 0){
+                                            await allFileKeys.forEach((key)=>{
+                                                const deleteParams = {
+                                                    Bucket: process.env.S3_BUCKET_NAME_FILE,
+                                                    Key: key
+                                                };
+                                                const s3 = new AWS.S3();
+                                                s3.deleteObject(deleteParams).promise()
+                                            })
+                                            }
+
+                                            }
+
                                         Swal.fire({
                                                 text:`Success , '${roomYouAreIn.roomName}' has been deleted already`,
                                                 showConfirmButton: false,
