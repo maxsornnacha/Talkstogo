@@ -1070,7 +1070,7 @@ export default function talkingroom(){
                    LocalAudioRef.current.srcObject = stream;
                    setMyStream(stream); 
                     //If i join in the room 
-                  setConnecting(true);        
+                   setConnecting(true);        
                }else {
                  Swal.fire({
                    icon:'error',
@@ -1145,13 +1145,11 @@ export default function talkingroom(){
                  //in offers will store from , to , and offer in an object in Array named offers
                  socket.emit('offer-got-send',{offers:offers , NO:userNO.current , roomEntering:roomEntering , roomUpdated:roomUpdated})
                }else{
-                 socket.emit('offer-not-got-send',{roomUpdated:roomUpdated})
+                 socket.emit('offer-not-got-send',{roomUpdated:roomUpdated , senderID:userData.accountData._id})
                  //If there is on offer created or said that there are no other users in the talk, only me
                  //The connecting loader will be finished
                   //Update WhichTalkingRoomAmIIn for specific talking channel i am entering  
                   setWhichTalkingRoomAmIIn(roomEntering)
-                  setConnecting(false);
-                  playSound();
                  
                }
              })
@@ -1172,10 +1170,15 @@ export default function talkingroom(){
 
 
       useEffect(()=>{
-        const handleOfferNotGotSend  = ({roomUpdated}) =>{
+        const handleOfferNotGotSend  = ({roomUpdated , senderID}) =>{
           //If there is only 1 user, the room will be updated
           if(room._id === roomUpdated._id){
             setRoom(roomUpdated)
+          }
+
+          if(senderID === userData.accountData._id){
+              setConnecting(false);
+              playSound();
           }
 
         }
@@ -1186,7 +1189,7 @@ export default function talkingroom(){
           socket.off('offer-not-got-send',handleOfferNotGotSend)
         }
 
-      },[room])
+      },[room , userData])
       
 
       useEffect(()=>{
