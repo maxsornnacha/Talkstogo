@@ -1701,7 +1701,7 @@ export default function talkingroom(){
              {talkingroom.participants.map((participant,index)=>{
                 return (
                 <div className="flex gap-2 text-[0.7rem] px-2 " key={index}>
-                    <div><img src={participant.accountImage} id={`user${index}-${talkingroom._id}`} className="h-5 w-5 rounded-full" /></div>
+                    <div><img src={participant.accountImage.secure_url} id={`user${index}-${talkingroom._id}`} className="h-5 w-5 rounded-full" /></div>
                     <div className="break-all text-start">{participant.firstname} {participant.lastname}</div>
                     <audio 
                     ref={participant._id === userData.accountData._id ?(element)=>{LocalAudioRef.current = element;  remoteAudioRefs.current[index] = null; userNO.current = index;}:(element)=>{remoteAudioRefs.current[index] = element}} 
@@ -1765,7 +1765,7 @@ export default function talkingroom(){
         </div>
         <div className="flex items-center gap-1 p-1">
             <Link href={`/profile/${userData.accountData.id}`}>
-            <img src={userData.accountData.accountImage} className="w-6 h-6 rounded-full" id="my-self-profile"/>
+            <img src={userData.accountData.accountImage.secure_url} className="w-6 h-6 rounded-full" id="my-self-profile"/>
             </Link>
             <Link href={`/profile/${userData.accountData.id}`}>
             <div className="text-[0.65rem] font-normal">
@@ -1916,7 +1916,7 @@ export default function talkingroom(){
             whichTalkingRoomAmIIn[0].participants.map((participant,index) =>{
             return (
             <div id={`userAnother${index}`} className="md:col-span-6 lg:col-span-4 xl:col-span-3 bg-stone-600 h-56 p-1 m-1 flex flex-col justify-center items-center gap-2 rounded-md" key={index}>
-                <img src={participant.accountImage} className="w-20 h-20 rounded-full"/>
+                <img src={participant.accountImage.secure_url} className="w-20 h-20 rounded-full"/>
                 <div className="text-[0.8rem]">{participant.firstname} {participant.lastname}</div>
             </div>
             )
@@ -1987,7 +1987,7 @@ export default function talkingroom(){
              {talkingroom.participants.map((participant,index)=>{
                 return (
                 <div id={`userMobile${index}`} className="col-span-6 text-[0.8rem] m-2 bg-stone-700 h-56 flex flex-col items-center justify-center gap-2 rounded-md" key={index}>
-                    <div><img src={participant.accountImage} className="h-10 w-10 md:h-6 md:w-6 rounded-full" /></div>
+                    <div><img src={participant.accountImage.secure_url} className="h-10 w-10 md:h-6 md:w-6 rounded-full" /></div>
                     <div>{participant.firstname} {participant.lastname}</div>
                     <audio 
                      ref={participant._id === userData.accountData._id ?(element)=>{LocalAudioRef.current = element;  remoteAudioRefs.current[index] = null; userNO.current = index;}:(element)=>{remoteAudioRefs.current[index] = element}} 
@@ -2100,7 +2100,7 @@ export default function talkingroom(){
                             <div className="text-white text-[0.9rem] flex gap-2 pb-10" key={index}>
                                 <div>
                                 <Link href={`/profile/${message.senderData.id}`}>
-                                  <img src={message.senderData.accountImage} className="w-8 h-8 rounded-full"/>
+                                  <img src={message.senderData.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
                                 </Link>
                                 </div>
 
@@ -2134,18 +2134,18 @@ export default function talkingroom(){
                                 <div className="grid grid-cols-12 w-[50vw] lg:w-[40vw]">
                                 {message.images.length === 1 &&
                                  message.images.map((image) =>{
-                                    return <img src={image.image} className="col-span-12 w-96 h-80 rounded-xl"/>
+                                    return <img src={image.image.secure_url} className="col-span-12 w-56 h-56 rounded-xl"/>
                                  })
                                 }
                                 {message.images.length > 1 &&
                                  message.images.map((image) =>{
-                                    return <img src={image.image} className="col-span-6 h-64 p-1 w-full rounded-xl "/>
+                                    return <img src={image.image.secure_url} className="col-span-6 max-h-96 h-full p-1 w-full rounded-xl "/>
                                  })
                                 }
                                 {message.video &&
                                 <div className="col-span-10 h-auto py-2 flex items-center justify-center p-1 w-auto rounded-xl bg-stone-800">
                                 <video controls height={700} width={500}>
-                                <source src={message.video} type="video/mp4" />
+                                <source src={message.video.Location} type="video/mp4" />
                                 Your browser does not support the video tag.
                                </video>
                                </div>
@@ -2249,7 +2249,7 @@ export default function talkingroom(){
                             <div className="text-white text-[0.9rem] flex gap-2 pb-10" key={index}>
                                 <div>
                                 <Link href={`/profile/${message.senderData.id}`}>
-                                  <img src={message.senderData.accountImage} className="w-8 h-8 rounded-full"/>
+                                  <img src={message.senderData.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
                                 </Link>
                                 </div>
 
@@ -2281,18 +2281,18 @@ export default function talkingroom(){
                                 <div className="grid grid-cols-12 mt-3">
                                 {message.images.length === 1 &&
                                  message.images.map((image) =>{
-                                    return <img src={image.image} className="col-span-12 w-full h-56 rounded-md"/>
+                                    return <img src={image.image.secure_url} className="col-span-12 w-56 h-56 rounded-md"/>
                                  })
                                 }
                                 {message.images.length > 1 &&
                                  message.images.map((image) =>{
-                                    return <img src={image.image} className="col-span-6 w-64 h-56 rounded-md "/>
+                                    return <img src={image.image.secure_url} className="col-span-6 w-44 h-44  rounded-md "/>
                                  })
                                 }
                                  {message.video &&
                                 <div className="col-span-10 h-auto py-2 flex items-center justify-center p-1 w-[50vw] rounded-xl bg-stone-800">
                                 <video controls height={700} width={500}>
-                                <source src={`${message.video}#t=0.1`} type="video/mp4" />
+                                <source src={`${message.video.Location}#t=0.1`} type="video/mp4" />
                                 Your browser does not support the video tag.
                                </video>
                                </div>
@@ -2379,7 +2379,7 @@ export default function talkingroom(){
           return (
           <div key={index} className="flex gap-2 items-center mb-2 relative">
               <Link href={`/profile/${creator.id}`}>
-              <div><img src={creator.accountImage} className="w-7 h-7 rounded-full"/></div>
+              <div><img src={creator.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
               <FontAwesomeIcon icon={faCircle} className={`${creatorStatus[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2 border-2 border-[#383739] rounded-full absolute left-5 top-4`}/> 
               <Link href={`/profile/${creator.id}`}>
@@ -2402,7 +2402,7 @@ export default function talkingroom(){
           return (
           <div key={index} className="flex gap-2 items-center mb-2 absolute">
               <Link href={`/profile/${admin.id}`}>
-              <div><img src={admin.accountImage} className="w-7 h-7 rounded-full"/></div>
+              <div><img src={admin.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
               <FontAwesomeIcon icon={faCircle} className={`${adminStatuses[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2 border-2 border-[#383739] rounded-full absolute left-5 top-4`}/> 
               <Link href={`/profile/${admin.id}`}>
@@ -2433,7 +2433,7 @@ export default function talkingroom(){
           return (
           <div key={index} className="flex gap-2 items-center mb-2 relative">
               <Link href={`/profile/${participant.id}`}>
-              <div><img src={participant.accountImage} className="w-7 h-7 rounded-full"/></div>
+              <div><img src={participant.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
               <FontAwesomeIcon icon={faCircle} className={`${participantStatuses[index] === 'online' ?'text-green-400':'text-red-500'} w-2 h-2 border-2 border-[#383739] rounded-full absolute left-5 top-4`}/> 
               <Link href={`/profile/${participant.id}`}>
@@ -2480,7 +2480,7 @@ export default function talkingroom(){
     //Room permission, if you are not a member of the room
     <div className="min-h-screen bg-[#383739] text-white flex flex-col items-center pt-56 gap-8">
         {room && 
-        <img src={room.roomIcon?room.roomIcon:'/black-background.jpg'} className="w-40 h-40 rounded-full"/>
+        <img src={room.roomIcon?room.roomIcon.secure_url:'/black-background.jpg'} className="w-40 h-40 rounded-full"/>
         }
         <div className="md:text-[1.2rem] text-[1rem] text-center p-3">{userData?`${userData.accountData.firstname} ${userData.accountData.lastname}`:'Unknown'} , has not been a member of  {room?`'${room.roomName}' yet`:'Unknown'}</div>
         {room && userData && 

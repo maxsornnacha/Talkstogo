@@ -54,10 +54,6 @@ export default function Postform(props){
               );
         }catch(error){
                 console.log('Uploaading post image failed: ' + error)
-                Swal.fire({
-                    icon: 'error',
-                    text: error
-                })
         }
          }
 
@@ -90,7 +86,7 @@ export default function Postform(props){
            }
         }
         catch(error){
-            console.log('Uploaading post image failed: ' + error)
+            console.log('Uploaading post video failed: ' + error)
             Swal.fire({
                 icon: 'error',
                 text: error
@@ -154,7 +150,7 @@ export default function Postform(props){
                             currentTime,
                             image,
                             id,
-                            video:data.Location
+                            video:data
                         },{
                             headers:{
                                 Authorization: `Bearer ${props.tokenKey}`
@@ -256,7 +252,7 @@ export default function Postform(props){
         
             <div className="py-3 flex items-center gap-2  w-full">
                 <Link href={`/profile/${props.accountData.id}`}>
-                <img src={props.accountData.accountImage} className="w-8 h-8 rounded-full"/>
+                <img src={props.accountData.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
                 </Link>
                 <Link href={`/profile/${props.accountData.id}`} className="text-violet-400 hover:text-white active:text-white text-[0.8rem]">
                     {props.accountData.firstname} {props.accountData.lastname}

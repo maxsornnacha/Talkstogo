@@ -94,7 +94,7 @@ export default function FriendList({userData}){
         {allChatAccounts[index] && allChatAccounts.length > 0 &&  
 
         <div onClick={()=>{handleChatroomToggle(true); setMsgNumber(index+1); setToggle2();}} className=" px-2 py-1 rounded-md hover:bg-gray-700 hover:text-white hover:cursor-pointer flex items-center w-full">
-            <img className="inline h-8 w-8 rounded-full" src={allChatAccounts[index].accountImage}  alt="Friendlist"/>
+            <img className="inline h-8 w-8 rounded-full" src={allChatAccounts[index].accountImage.secure_url}  alt="Friendlist"/>
         <div>
         <div className="ms-2 text-[0.75rem] font-normal flex gap-1">
             <div>{allChatAccounts[index].firstname.length >= 10?allChatAccounts[index].firstname.slice(0,10)+'...':allChatAccounts[index].firstname}</div>
@@ -117,6 +117,12 @@ export default function FriendList({userData}){
         </div>
         )
         })}
+
+    {sortedCombinedData && sortedCombinedData.length === 0 &&
+    <div className="text-[0.8rem] px-2">
+        <div className="text-gray-400">No current contact yet</div>
+    </div>
+    }
     </div>
     )
     }

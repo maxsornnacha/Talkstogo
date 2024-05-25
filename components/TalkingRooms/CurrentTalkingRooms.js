@@ -94,7 +94,7 @@ export default function Rooms({userData , CurrentTalkingRoomLoading}){
             <div className="w-full flex flex-col items-start" key={index}>
                     <Link className="flex px-2  items-center gap-2  w-full py-1  hover:bg-gray-700 rounded-md hover:text-white" href={`/rooms/talking-room/${room.slug}`}>
                         {room.roomIcon ?
-                        <img className=" h-8 w-8 rounded-full" src={room.roomIcon} alt="Room picture"/>
+                        <img className=" h-8 w-8 rounded-full" src={room.roomIcon.secure_url} alt="Room picture"/>
                         :
                         <div className="bg-[#383739] text-[#383739] h-8 w-8 rounded-full">...</div>
                         }

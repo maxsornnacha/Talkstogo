@@ -186,7 +186,7 @@ export default function RoomsOnMain({userData,roomYouAreIn,RoomsOnMainLoadingSta
                  <Link id={`roomname-${index}`} passHref={true} className={`flex px-2 items-center gap-2 rounded-full pt-2`} href={`/rooms/talking-room/${room.slug}`}>
                     <img
                     className={`hover:rounded-xl h-12 w-12 hover:bg-gray-500 shadow-md ${roomYouAreIn && room._id === roomYouAreIn._id?'rounded-xl':'rounded-full'}`}
-                    src={room.roomIcon}
+                    src={room.roomIcon.secure_url}
                     alt="Room Image" 
                     onMouseEnter={()=>handleMouseEnter(`dec-${index}`,room._id)}
                     onMouseLeave={()=>handleMouseLeave(`dec-${index}`,room._id)}

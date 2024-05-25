@@ -22,7 +22,7 @@ export default function MemberCard({handleCloseMemberCard , admins , participant
           return (
           <div key={index} className="flex items-center my-3 relative">
               <Link href={`/profile/${creator.id}`} className={`me-2 ms-2`}>
-              <div><img src={creator.accountImage} className="w-7 h-7 rounded-full"/></div>
+              <div><img src={creator.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
               <FontAwesomeIcon icon={faCircle} className={`absolute left-7 bottom-0 border-2 rounded-full border-stone-800 ${creatorStatus[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2`}/> 
               <Link href={`/profile/${creator.id}`}>
@@ -49,7 +49,7 @@ export default function MemberCard({handleCloseMemberCard , admins , participant
           return (
           <div key={index} className="flex items-center my-3 relative">
               <Link href={`/profile/${admin.id}`} className={`me-2 ms-2`}>
-              <div><img src={admin.accountImage} className="w-7 h-7 rounded-full"/></div>
+              <div><img src={admin.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
               <FontAwesomeIcon icon={faCircle} className={`absolute left-7 bottom-0 border-2 rounded-full border-stone-800 ${adminStatuses[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2`}/> 
               <Link href={`/profile/${admin.id}`}>
@@ -75,7 +75,7 @@ export default function MemberCard({handleCloseMemberCard , admins , participant
           return (
           <div key={index} className="flex items-center my-3 relative">
               <Link href={`/profile/${participant.id}`} className={`me-2 ms-2`}>
-              <div><img src={participant.accountImage} className="w-7 h-7 rounded-full"/></div>
+              <div><img src={participant.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
               <FontAwesomeIcon icon={faCircle} className={`absolute left-7 bottom-0 border-2 rounded-full border-stone-800 ${participantStatuses[index] === 'online' ?'text-green-400':'text-red-500'}  w-2 h-2`}/> 
               <Link href={`/profile/${participant.id}`}>

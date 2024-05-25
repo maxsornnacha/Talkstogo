@@ -88,7 +88,7 @@ export default function Search(props){
                     <button onClick={()=>props.handleClick(false)} key={index}>
                     <Link href={`/profile/${accountFiltered.id}`}>
                     <div className="flex items-center gap-2  rounded-md p-2 hover:bg-gray-700">
-                        <img src={accountFiltered.accountImage} className="w-8 h-8 rounded-full"/>
+                        <img src={accountFiltered.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
                         <div>
                             <div className="text-[0.75rem] text-start font-normal">{accountFiltered.firstname} {accountFiltered.lastname}</div>
                             <div className="text-[0.7rem] text-start font-normal">Username: {accountFiltered.username}</div>

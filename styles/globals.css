@@ -11,6 +11,9 @@
   color: white;
   font-weight: bolder;
 }
+.swal2-container {
+  z-index: 10000;
+}
 
 
 

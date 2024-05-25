@@ -29,10 +29,6 @@ export default function Reply(props){
         }
         catch(error){
             console.log('Uploading reply image failed:' + error)
-            Swal.fire({
-                icon:'error',
-                text:error
-            })
         }
      }  
 
@@ -74,7 +70,7 @@ export default function Reply(props){
                         Authorization: `Bearer ${props.tokenKey}`
                       }
                 })
-                    .then(async ()=>{
+                    .then(async (response)=>{
                         Swal.fire({
                              text: "Successfully replied",
                              showConfirmButton: false,
@@ -84,7 +80,7 @@ export default function Reply(props){
                             setReplyInput('')
                             setReplyImage(null)
                             props.handleReplyToggle();
-                            props.handleRealtime(props.index,currentDate,currentTime,accountImage,firstname,lastname,accountID,postID,commentID,replyInput,replyImage)
+                            props.handleRealtime(props.index,response.data)
 
                       })
                      })

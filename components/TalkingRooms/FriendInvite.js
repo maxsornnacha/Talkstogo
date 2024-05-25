@@ -183,7 +183,7 @@ export default function FriendInvite({userData , handleCloseInviteCard , roomYou
                       return (
                       <div className="flex items-center justify-between" key={index}>
                         <Link href={`/profile/${friend.id}`} className="flex items-center gap-1 text-[0.75rem]">
-                          <img src={friend.accountImage} className="w-8 h-8 rounded-full"/>
+                          <img src={friend.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
                           <div className="hover:text-purple-600">{friend.firstname} {friend.lastname}</div>
                         </Link>
 

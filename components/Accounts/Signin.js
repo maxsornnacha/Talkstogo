@@ -296,7 +296,7 @@ export default function Signin(props){
                    <h1 className="text-[1.4rem] font-semibold text-white ">Login to your account</h1>
                  </div>
                  <div className="divide-y divide-white">
-                   <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                   <div className="pt-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
                      <div className="relative py-2">
                        <input
                          value={emailInput}
@@ -311,7 +311,7 @@ export default function Signin(props){
                          Email Address
                        </label>
                      </div>
-                     <div className="relative py-2">
+                     <div className="relative pt-2">
                        <input
                          value={passwordInput}
                          onChange={handlePasswordInput}
@@ -325,8 +325,8 @@ export default function Signin(props){
                          Password
                        </label>
                      </div>
-                     {isWrongEmail && <div className="text-red-400 text-[0.75rem] font-semibold">The email is invalid</div>}
-                     {isWrongPassword && <div className="text-red-400 text-[0.75rem] font-semibold">The password is invalid</div>}
+                     {isWrongEmail && <div className="text-red-400 text-[0.75rem] font-semibold ">Email is wrong</div>}
+                     {isWrongPassword && <div className="text-red-400 text-[0.75rem] font-semibold">Password is wrong</div>}
                      <div className="relative">
                        <button disabled={loadingEvent?true:false} onClick={handleSubmitForm} className="bg-purple-500 hover:bg-purple-600 text-white rounded-md h-10 w-full flex justify-center items-center text-[1rem] font-semibold">
                          {!loadingEvent ? 'Continue' : <div className="loader-event-dot text-[2px] w-2"></div>}

@@ -139,7 +139,7 @@ export default function Messenger({messages,userData,handleChatroomToggle,closeM
                 <div key={index}>
                 <button onClick={()=>{handleChatroomToggle(true,index); closeMessanger(false,account)}} className={`hover:bg-gray-700 w-full py-3 flex gap-2 p-2 ${!(messenger.messages[messenger.messages.length-1].isRead) && !(messenger.messages[messenger.messages.length-1].senderID === userData.accountData._id)?'bg-violet-800 hover:bg-violet-700 text-white font-normal':''}`} key={index}>
                 <div>
-                    <img src={account.accountImage} className="h8 w-8 rounded-full"/>
+                    <img src={account.accountImage.secure_url} className="h8 w-8 rounded-full"/>
                 </div>
                 <div className="flex flex-col">
                     <div className={`text-start text-[0.75rem] ${!(messenger.messages[messenger.messages.length-1].isRead) && !(messenger.messages[messenger.messages.length-1].senderID === userData.accountData._id)?'font-medium':'font-normal'}`}>{account.firstname} {account.lastname}</div>
@@ -187,7 +187,7 @@ export default function Messenger({messages,userData,handleChatroomToggle,closeM
                 <div>
                 <button onClick={()=>{handleChatroomToggle(true,index); closeMessanger(false,account)}} className={`hover:bg-gray-700 w-full py-3 flex gap-2 p-2 ${!(messenger.messages[messenger.messages.length-1].isRead) && !(messenger.messages[messenger.messages.length-1].senderID === userData.accountData._id)?'bg-violet-800 hover:bg-violet-700 text-white':''}`} key={index}>
                 <div>
-                    <img src={account.accountImage} className="h-8 w-8 rounded-full"/>
+                    <img src={account.accountImage.secure_url} className="h-8 w-8 rounded-full"/>
                 </div>
                 <div className="flex flex-col">
                     <div className={`text-start text-[0.75rem] ${!(messenger.messages[messenger.messages.length-1].isRead) && !(messenger.messages[messenger.messages.length-1].senderID === userData.accountData._id)?'font-semibold':'font-normal'}`}>{account.firstname} {account.lastname}</div>

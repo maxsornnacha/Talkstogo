@@ -100,7 +100,11 @@ export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseR
                 {
                     setEditRoomLoading(true);
                     axios.put(`${process.env.API_URL}/change-room-info`,{
-                    roomID:roomYouAreIn._id,roomName:nameInput,roomDescription:descriptionInput,roomIcon:(imageInput?imageInput:roomYouAreIn.roomIcon)
+                    roomID:roomYouAreIn._id,
+                    roomName:nameInput,
+                    roomDescription:descriptionInput,
+                    prevRoomIcon:(roomYouAreIn.roomIcon?roomYouAreIn.roomIcon:null),
+                    roomIcon:(imageInput?imageInput:roomYouAreIn.roomIcon)
                     },{
                         headers:{
                             Authorization: `Bearer ${userData.token_key}`
@@ -378,7 +382,10 @@ export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseR
                                         setDeleteRoomLoading(true);
                                       //ออกจากห้อง participant
                                         axios.delete(`${process.env.API_URL}/room-deleting`,{
-                                         data:{roomID:roomYouAreIn._id},
+                                         data:{
+                                            roomID:roomYouAreIn._id,
+                                            roomIcon:roomYouAreIn.roomIcon
+                                         },
                                          headers:{
                                             Authorization: `Bearer ${userData.token_key}`
                                           }
@@ -670,7 +677,7 @@ export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseR
         })
         .then((status)=>{
             if(status.isConfirmed){
-                if(messageConfirmInput === talkingChannelSelectedName){
+                if(messageConfirmInput.trim() === talkingChannelSelectedName.trim()){
                     setDeleteTalkingChannelLoading(true);
                     axios.delete(`${process.env.API_URL}/talkingChannel-data-deleted`,{
                         data:{talkingChannelID:talkingChannelSelected  , roomData:roomYouAreIn},
@@ -760,7 +767,7 @@ export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseR
             <label htmlFor="room-icon" className="cursor-pointer w-20" >
                 <FontAwesomeIcon icon={faPlus} className="text-white w-3 h-3 absolute rounded-full p-1 bg-purple-700 left-[70px]"/>
                 {roomYouAreIn.roomIcon?
-                <img id="roomIcon" src={roomYouAreIn.roomIcon} className="w-16 h-16 rounded-full"/>
+                <img id="roomIcon" src={roomYouAreIn.roomIcon.secure_url} className="w-16 h-16 rounded-full"/>
                 :
                 <div className="w-16 h-16 rounded-full bg-stone-800 hover:bg-gray-600 active:bg-gray-600">&nbsp;&nbsp;&nbsp;</div>
                 }
@@ -798,7 +805,7 @@ export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseR
             <label htmlFor="room-icon" className="cursor-pointer w-20" >
                 <FontAwesomeIcon icon={faPlus} className="text-white w-3 h-3 absolute rounded-full p-1 bg-purple-700 left-[70px]"/>
                 {roomYouAreIn.roomIcon?
-                <img id="roomIcon" src={roomYouAreIn.roomIcon} className="w-16 h-16 rounded-full"/>
+                <img id="roomIcon" src={roomYouAreIn.roomIcon.secure_url} className="w-16 h-16 rounded-full"/>
                 :
                 <div className="w-16 h-16 rounded-full bg-stone-800 hover:bg-gray-600 active:bg-gray-600">&nbsp;&nbsp;&nbsp;</div>
                 }

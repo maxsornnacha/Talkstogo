@@ -61,10 +61,6 @@ export default function CommentForm(props){
         }
         catch(error){
             console.log('Uploading reply image failed:' + error)
-            Swal.fire({
-                icon:'error',
-                text:error
-            })
         }
      }  
 
@@ -139,44 +135,17 @@ export default function CommentForm(props){
 
      }
      
-     const handleRealtime=(index,currentDate,currentTime,accountImage,firstname,lastname,accountID,postID,commentID,replyInput,replyImage)=>{
-              //make it in real-time from client side    
+     const handleRealtime=(index , postUpdated)=>{
+            //make it in real-time from client side    
             socket.emit('replyData',
-            {index,currentDate,currentTime,accountImage,firstname,lastname,accountID,postID,commentID,replyInput,replyImage}
+            {postUpdated}
             ) 
 
         setReplyToggleForDisplay(index)
                   
      }
 
-     // Remember to clean up the event listener when the component unmounts
-    useEffect(() => {
-
-        const handdleOn = (replyData) => {
-            setCommentData((comment) =>{
-                const result =  comment.map((item)=>{
-                    if(item.commentID === replyData.commentID){
-                        return {...item, replies:[...item.replies,replyData]}
-                    }else{
-                        return item
-                    }
-                })
-
-                return result  
-           })
-          }
-          
-          socket.on('replyData', handdleOn);
-
-        // Clean up the event listener when the component unmounts
-        return () => {
-             socket.off('replyData', handdleOn);
-        };
-
     
-    }, [commentData]);
-
-
     //Post Image Displaying
     const [showPostImage , setShowPostImage] = useState(false);
     const [showCommentImage , setShowCommentImage] = useState(null);
@@ -209,7 +178,7 @@ export default function CommentForm(props){
             <div className="h-full md:w-7/12 overflow-auto px-5 bg-stone-800 break-all">
                 <div className="py-2 flex items-center gap-2">
                 <Link href={`/profile/${props.post.accountID}`} >
-                <img src={props.post.accountImage} className="w-8 h-8 rounded-full"/>
+                <img src={props.post.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
                 </Link>
                 <Link href={`/profile/${props.post.accountID}`} >
                 <div className="flex flex-col justify-center ">
@@ -224,13 +193,13 @@ export default function CommentForm(props){
                 </div>
                 {props.post.image && 
                 <div className="py-2">
-                <img onClick={()=>{setShowPostImage(true);}} src={props.post.image} className="cursor-pointer w-56 h-56 rounded-md"/>
+                <img onClick={()=>{setShowPostImage(true);}} src={props.post.image.secure_url} className="cursor-pointer w-56 h-56 rounded-md"/>
                 </div>
                 }
                 {props.post.video && 
                 <div className="px-2 pb-3">
                 <video controls height={100} width={300} autoPlay className="bg-stone-900">
-                <source src={`${props.post.video}#t=0.1`} type="video/mp4" />
+                <source src={`${props.post.video.Location}#t=0.1`} type="video/mp4" />
                 Your browser does not support the video tag.
                </video>
                 </div>
@@ -302,7 +271,7 @@ export default function CommentForm(props){
                  
                         <div className="flex gap-1">
                             <Link href={`/profile/${commentItem.accountID}`}>
-                             <img src={commentItem.accountImage} className="h-7 w-7 rounded-full"/>
+                             <img src={commentItem.accountImage.secure_url} className="h-7 w-7 rounded-full"/>
                              </Link>
                         <div className="w-10/12 flex flex-col">
                             <div className="bg-purple-800 rounded-md break-words px-1 pb-2">
@@ -310,7 +279,7 @@ export default function CommentForm(props){
                             <div className="text-[0.8rem]"> {commentItem.commentInput}</div>
                             {commentItem.commentImage &&
                             <div>
-                                <img onClick={()=>{setShowCommentImage({status:true , imageNO:index+1})}}  src={commentItem.commentImage} className="cursor-pointer rounded-md h-48 w-48" />
+                                <img onClick={()=>{setShowCommentImage({status:true , imageNO:index+1})}}  src={commentItem.commentImage.secure_url} className="cursor-pointer rounded-md h-48 w-48" />
                             </div>
                             }
                              {/* image show card from Comment Image */}
@@ -321,7 +290,7 @@ export default function CommentForm(props){
                                 <FontAwesomeIcon onClick={()=>{setShowCommentImage(null);}} icon={faClose} className="h-7 w-7 hover:text-gray-400 cursor-pointer"/>
                             </div>
                             <div className="p-3">
-                                <img className="h-full w-full" src={commentItem.commentImage} alt="Post picture"/>
+                                <img className="h-full w-full" src={commentItem.commentImage.secure_url} alt="Post picture"/>
                             </div>
                             </div>
                             </div>
@@ -359,7 +328,7 @@ export default function CommentForm(props){
                                         &nbsp;&nbsp;&nbsp;&nbsp;
                                     </div>
                                     <Link href={`/profile/${item.accountID}`}>
-                                        <img src={item.accountImage} className="w-7 h-7 rounded-full"/>
+                                        <img src={item.accountImage.secure_url} className="w-7 h-7 rounded-full"/>
                                     </Link>
 
                                     <div className="flex flex-col gap-1 ms-1">
@@ -368,7 +337,7 @@ export default function CommentForm(props){
                                         <div className="text-[0.75rem]">{item.replyInput}</div>
                                     {item.replyImage &&
                                     <div className="w-full">
-                                        <img onClick={()=>{setShowReplyImage({status:true , imageNO:index+1});}} src={item.replyImage} className="cursor-pointer rounded-md w-6/12" />
+                                        <img onClick={()=>{setShowReplyImage({status:true , imageNO:index+1});}} src={item.replyImage.secure_url} className="cursor-pointer rounded-md w-6/12" />
                                     </div>
                                     }
                                     {/* image show card from Comment Image */}
@@ -379,7 +348,7 @@ export default function CommentForm(props){
                                         <FontAwesomeIcon onClick={()=>{setShowReplyImage(null);}} icon={faClose} className="h-7 w-7 hover:text-gray-400 cursor-pointer"/>
                                     </div>
                                     <div className="p-3">
-                                        <img className="h-full w-full" src={item.replyImage} alt="Post picture"/>
+                                        <img className="h-full w-full" src={item.replyImage.secure_url} alt="Post picture"/>
                                     </div>
                                     </div>
                                     </div>

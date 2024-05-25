@@ -333,7 +333,7 @@ export default function ChatroomProfile({senderData,getterData,handleCloseChat,u
                 <FontAwesomeIcon icon={faArrowLeft} className='w-5 h-5 text-gray-100 hover:text-purple-400 p-2 '/>
             </button>
                 <Link href={`/profile/${getter.id}`}>
-                 <img src={getter.accountImage} className="w-8 h-8 rounded-full"/>  
+                 <img src={getter.accountImage.secure_url} className="w-8 h-8 rounded-full"/>  
                 </Link>
                 <div>
                 <Link href={`/profile/${getter.id}`}>
@@ -355,11 +355,11 @@ export default function ChatroomProfile({senderData,getterData,handleCloseChat,u
                 <div className="flex gap-2 mt-2" key={data._id}>
                 <div className =' bg-[#1e1e1f] text-white mt-4 pt-4 bg  flex items-end'>
                     <Link href={`/profile/${getter.id}`}>
-                    <img src={getter.accountImage} className="rounded-full inline w-8 h-8" alt="profile picture"/>
+                    <img src={getter.accountImage.secure_url} className="rounded-full inline w-8 h-8" alt="profile picture"/>
                     </Link>
                 </div>
                 <div onDoubleClick={()=>handleDoubleClickCopy(data.content)} className="max-w-56 w-auto px-5 bg-gray-700 text-white text-[0.8rem] pt-4 break-words  rounded-xl">
-                {data.image ?<Link href={data.image} target="blank"><img src={data.image} className={`h-32 w-32 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></Link>:''}
+                {data.image ?<Link href={data.image.secure_url} target="blank"><img src={data.image.secure_url} className={`h-32 w-32 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></Link>:''}
                     {isURL(data.content)?<a className="text-green-400 hover:text-white" target="_blank"  href={data.content}>{data.content}</a>:data.content}
                 <div className="bg-gray-00 text-white text-end pt-3 text-[0.7rem]">{convertTime(data.timestamp)}</div>
                 </div>
@@ -367,13 +367,13 @@ export default function ChatroomProfile({senderData,getterData,handleCloseChat,u
                 : //your chat
                 <div className="flex justify-end  col-span-10 bg-[#1e1e1f] mt-2" key={data._id}>
                 <div onDoubleClick={()=>handleDoubleClickCopy(data.content)} className="max-w-56 w-auto px-5 bg-purple-500 text-white text-start text-[0.8rem] pt-4 break-words rounded-xl">
-                {data.image ?<Link href={data.image} target="blank"><img src={data.image} className={`h-32 w-32 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></Link>:''}
+                {data.image ?<Link href={data.image.secure_url} target="blank"><img src={data.image.secure_url} className={`h-32 w-32 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></Link>:''}
                     {isURL(data.content)?<a className="text-green-400 hover:text-white" target="_blank"  href={data.content}>{data.content}</a>:data.content}
                 <div className="bg-purple-500 text-white text-end pt-3 text-[0.7rem]">{data.isRead?<FontAwesomeIcon icon={faCheck} className="text-green-300 h-3 w-3"/>:'Unread'} {convertTime(data.timestamp)}</div>
                 </div>
                 <div className =' bg-[#1e1e1f] text-white ms-2 mt-4 pt-4 bg col-span-2 flex items-end'>
                     <Link href={`/profile/${sender.accountData.id}`}>
-                    <img src={sender.accountData.accountImage} className="rounded-full inline w-8 h-8"  alt="profile's picture"/>
+                    <img src={sender.accountData.accountImage.secure_url} className="rounded-full inline w-8 h-8"  alt="profile's picture"/>
                     </Link>
                 </div>
                 </div>

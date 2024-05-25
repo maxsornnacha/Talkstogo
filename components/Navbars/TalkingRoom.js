@@ -190,7 +190,7 @@ export default function TalkingRoom({userData}){
             <div key={index} className="py-2 px-2 bg-gray-700 my-2 mx-2 rounded-md"> 
                 <div className="flex gap-1 items-center">
                 <Link href={`/rooms/talking-room/${data.roomRequested.slug}`}>  
-                <img src={data.roomRequested.roomIcon?data.roomRequested.roomIcon:'/black-background.jpg'} className="w-8 h-8 rounded-full"/>
+                <img src={data.roomRequested.roomIcon?data.roomRequested.roomIcon.secure_url:'/black-background.jpg'} className="w-8 h-8 rounded-full"/>
                 </Link>
 
                 <div>  
@@ -201,7 +201,7 @@ export default function TalkingRoom({userData}){
                 <div className="flex flex-wrap gap-1">
                     <div className="text-[0.7rem] flex gap-2 items-center">From : </div>
                     <Link href={`/profile/${data.requesterInfo.id}`} className="font-normal text-[0.7rem] flex items-center gap-1 hover:text-purple-400 active:text-purple-400">
-                        <img src={data.requesterInfo.accountImage} className="w-6 h-6 rounded-full"/>
+                        <img src={data.requesterInfo.accountImage.secure_url} className="w-6 h-6 rounded-full"/>
                         {data.requesterInfo.firstname} {data.requesterInfo.lastname}
                     </Link>
                 </div>

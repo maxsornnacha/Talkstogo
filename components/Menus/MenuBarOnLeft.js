@@ -34,7 +34,7 @@ export default function MenuBarOnNavbar(props){
         <div className="flex w-full p-2 mt-2 hover:bg-gray-700 hover:text-white hover:rounded-md">
         <Link href={`/profile/${props.userData.accountData.id}`}  className="flex items-center gap-1 hover:overflow-auto w-full font-normal">
 
-            <img src={props.userData?props.userData.accountData.accountImage:'/defaultProfile.png'} alt="home" className="h-8 w-8  cursor-pointer rounded-full"/>
+            <img src={props.userData?props.userData.accountData.accountImage.secure_url:'/defaultProfile.png'} alt="home" className="h-8 w-8  cursor-pointer rounded-full"/>
             <div className="text-[0.75rem]">
             <div>{props.userData.accountData.firstname} {props.userData.accountData.lastname}</div>
             <div className="text-[0.65rem]">Username : {props.userData.accountData.username}</div>

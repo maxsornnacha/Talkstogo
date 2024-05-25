@@ -168,7 +168,7 @@ export default function Messages({chatroom , userData , updateToBottom}){
                     senderData:userData.accountData,
                     content:messageInput , 
                     images:imageInput,
-                    video:data.Location,
+                    video:data,
                     file:fileInput
                 },{
                     headers:{

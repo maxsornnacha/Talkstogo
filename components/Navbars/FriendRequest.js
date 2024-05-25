@@ -45,7 +45,7 @@ export default function FriendRequest(props){
     <div key={index}>
      <div className="bg-gray-700 text-white m-2 p-2 rounded-md">
         <Link href={`/profile/${accountRequester.id}`}  className="flex gap-2 items-center hover:text-violet-400 active:text-violet-400">
-        <div><img src={accountRequester.accountImage} className="w-8 h-8 rounded-full"/></div>
+        <div><img src={accountRequester.accountImage.secure_url} className="w-8 h-8 rounded-full"/></div>
         <div className="flex flex-col">
             <div className="text-[0.75rem] font-normal">{accountRequester.firstname} {accountRequester.lastname}</div>
             <div className="text-[0.7rem] font-normal">Username: {accountRequester.username}</div>

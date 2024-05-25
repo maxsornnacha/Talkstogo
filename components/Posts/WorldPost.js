@@ -19,6 +19,13 @@ import MenuOnRight from "../Menus/MenuOnRight"
 
 
 export default function WorldPost(props){
+
+    AWS.config.update({
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+        region: process.env.S3_BUCKET_REGION
+    });
+
     const [toggleForm,setToggleForm] = useState(false)
     const [posts,setPosts] = useState([])
     const [likeCount,setLikeCount] = useState(null)
@@ -122,10 +129,41 @@ export default function WorldPost(props){
     },[])
 
 
+     //Reply
+     useEffect(() => {
+
+        const handleOnReply = ({postUpdated}) => {
+              setPosts(()=>{
+                const result = posts.map((post)=>{
+                    if(post.postID === postUpdated.postID){
+                        return postUpdated
+                    }else{
+                        return post
+                    }
+              })
+
+                return result
+              })
+          }
+          
+          socket.on('replyData', handleOnReply);
+
+        // Clean up the event listener when the component unmounts
+        return () => {
+             socket.off('replyData', handleOnReply);
+        };
+
+    
+    }, [posts]);
+
+
     //Handle Deleting Posts
     const handleDeletePost = (post , index, event)=>{
         event.preventDefault()
-        const postID = post._id
+        const postID = post._id;
+        const postImage = post.image;
+        const commentImages = post.comments.filter(comment => comment.commentImage).map(comment => comment.commentImage);
+        const replyImages = post.comments.flatMap(comment => comment.replies).filter(reply => reply.replyImage).map(reply => reply.replyImage);
         Swal.fire({
             icon:'warning',
             text:'Are you sure you want to delete your post ?',
@@ -136,7 +174,10 @@ export default function WorldPost(props){
             if(result.isConfirmed) {
                 axios.delete(`${process.env.API_URL}/delete-post`,{
                     data:{
-                        postID:postID
+                        postID:postID,
+                        postImage:postImage,
+                        commentImages:commentImages,
+                        replyImages:replyImages
                     },
                     headers:{
                         Authorization: `Bearer ${props.userData.token_key}`
@@ -149,7 +190,17 @@ export default function WorldPost(props){
                         timer: 1500,
                         position:"top"
                     })
-                    .then(()=>{
+                    .then(async ()=>{
+
+                        if(post.video){
+                            const deleteParams = {
+                                Bucket: process.env.S3_BUCKET_NAME_VIDEO,
+                                Key: post.video.Key
+                            };
+                            const s3 = new AWS.S3();
+                            await s3.deleteObject(deleteParams).promise();
+                        }
+
                         setShowMenuToggle(null);
                         socket.emit('delete-post',{postID:postID})
                     })
@@ -216,8 +267,9 @@ export default function WorldPost(props){
                         return prevPost
                     }
                 })
-                
             })
+
+            window.location.reload();
         }
 
         socket.on('edited-post',handleEditPost)
@@ -225,7 +277,7 @@ export default function WorldPost(props){
         return () => {
             socket.off('edited-post',handleEditPost)
         }
-    })
+    },[posts])
 
 
 
@@ -266,7 +318,7 @@ export default function WorldPost(props){
                 {/* Profile image */}
                  <div className="flex flex-col">
                 <Link href={`/profile/${item.accountID}`}>
-                 <img className=" rounded-full h-8 w-8 inline-block me-1" src={item.accountImage} alt="Profile picture"/>
+                 <img className=" rounded-full h-8 w-8 inline-block me-1" src={item.accountImage.secure_url} alt="Profile picture"/>
                  </Link>
                  </div>
                 
@@ -291,7 +343,7 @@ export default function WorldPost(props){
                  {showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1 &&
                  <div className="flex flex-col bg-stone-800 absolute right-6 top-1">
                  <div className="flex flex-row w-32 items-center text-white">
-                    <LikeSystem userData={props.userData} accountID={props.userData.accountData.id} postID={item.postID} post={posts[index]} handleCloseMenuToggle={handleCloseMenuToggle}/>
+                    <LikeSystem key={index} userData={props.userData} accountID={props.userData.accountData.id} postID={item.postID} post={posts[index]} handleCloseMenuToggle={handleCloseMenuToggle}/>
                  </div>
                  <span onClick={()=>{setToggleComment(item.postID); setShowMenuToggle(null);}} className="text-[0.75rem] text-center font-normal cursor-pointer hover:bg-stone-600  py-1">
                      Comment
@@ -319,13 +371,13 @@ export default function WorldPost(props){
                  </p>
                  {/* Post Image */}
                  {item.image &&
-                   <img className="h-60 w-60 px-3 pb-3 rounded-2xl" src={item.image}  alt="Post picture"/>
+                   <img className="h-60 w-60 px-3 pb-3 rounded-2xl" src={item.image.secure_url}  alt="Post picture"/>
                  }
                  {/* Post Video */}
                  {item.video &&
                  <div className="px-3 pb-3">
                    <video height={100} width={300} className="bg-stone-900">
-                   <source src={`${item.video}#t=0.1`}  type="video/mp4" />
+                   <source src={`${item.video.Location}#t=0.1`}  type="video/mp4" />
                    Your browser does not support the video tag.
                   </video>
                 </div>
@@ -378,7 +430,7 @@ export default function WorldPost(props){
 
         {posts.map((item, index) =>{
         return (
-        <>
+        <div key={index}>
             {toggleComment === item.postID &&
                 <div className="overlay z-[100]">
                     <CommentForm post={posts[index]} postID={item.postID} postComments={item.comments}  toggleCancel={handleToggleCommentCancel} accountData={props.userData.accountData} tokenKey={props.userData.token_key} key={item.postID}/>
@@ -390,7 +442,7 @@ export default function WorldPost(props){
                     <EditForm userData={props.userData} post={posts[index]} toggleCancelEdit={toggleCancelEdit} key={item.postID}/>
                 </div>
             }
-        </>
+        </div>
         )
         })
 

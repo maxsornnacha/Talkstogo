@@ -6,9 +6,18 @@ import Swal from "sweetalert2";
 import { io } from 'socket.io-client'
 import LoaderPage from "../loader/LoaderPage";
 const socket = io(process.env.API_SOCKET_URL)
-
+import AWS from 'aws-sdk'
+import { v4 as uuidv4 } from 'uuid';
 
 export default function ChatroomMenu({chatroom,handleCloseChatroomMenu,closeMobileChatboxToggleInSetting , isMobile , roomYouAreIn,userData}){
+    
+    AWS.config.update({
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+        region: process.env.S3_BUCKET_REGION
+    });
+    
+    
     const [nameInput,setNameInput] = useState(chatroom.roomName)
     const [messageConfirmInput,setMessageConfirmInput] = useState('')
 
@@ -81,7 +90,7 @@ export default function ChatroomMenu({chatroom,handleCloseChatroomMenu,closeMobi
         .then((status)=>{
             if(status.isConfirmed){
                 setDeleteLoading(true);
-                if(messageConfirmInput === chatroom.roomName){
+                if(messageConfirmInput.trim() === chatroom.roomName.trim()){
                     axios.delete(`${process.env.API_URL}/chatroom-data-deleted`,{
                         data:{chatroom  , roomData:roomYouAreIn},
                         headers:{
@@ -89,6 +98,18 @@ export default function ChatroomMenu({chatroom,handleCloseChatroomMenu,closeMobi
                           }
                     })
                     .then(async (response)=>{
+                        const msgVideo = chatroom.messages.filter(message=>message.video).map(message=>message.video);
+                        if(msgVideo && msgVideo.length > 0){
+                        const s3 = new AWS.S3();
+                        await msgVideo.forEach(async (element) => {
+                            const deleteParams = {
+                                Bucket: process.env.S3_BUCKET_NAME_VIDEO,
+                                Key: element.Key
+                            };
+                            s3.deleteObject(deleteParams).promise();
+                        });
+                        }
+
                         await socket.emit('new-talkingroom-or-chatroom-created',{roomUpdated:response.data})
                         await Swal.fire({
                             text:'Successfully deleted',

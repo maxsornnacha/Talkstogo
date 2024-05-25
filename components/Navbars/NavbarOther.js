@@ -291,7 +291,7 @@ export default function Navbar(props){
 
         {props.userData &&
         <div className="flex gap-1 items-center cursor-pointer ">
-            <img id="profile" onClick={()=>{setMenuToggle(false); setProfileToggle(profileToggle?false:true); setMessengerToggle(false); setTalkingRoomToggle(false); setSearchToggle(false); setFriendRequestToggle(false)}} className="outline-none rounded-full h-9 w-9 cursor-pointer" src={props.userData?props.userData.accountData.accountImage:'/defaultProfile.png'} alt="Profile picture"/>
+            <img id="profile" onClick={()=>{setMenuToggle(false); setProfileToggle(profileToggle?false:true); setMessengerToggle(false); setTalkingRoomToggle(false); setSearchToggle(false); setFriendRequestToggle(false)}} className="outline-none rounded-full h-9 w-9 cursor-pointer" src={props.userData?props.userData.accountData.accountImage.secure_url:'/defaultProfile.png'} alt="Profile picture"/>
         </div> 
         }
         <Tooltip 

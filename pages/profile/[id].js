@@ -24,6 +24,13 @@ import Head from 'next/head'
 
 
 export default function Profile(){
+
+  AWS.config.update({
+    accessKeyId: process.env.S3_ACCESS_KEY,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    region: process.env.S3_BUCKET_REGION
+  });
+
   const router = useRouter()
   const {id}= router.query
   const [toggle,setToggle] = useState('profile')
@@ -249,6 +256,9 @@ useEffect(()=>{
   const handleDeletePost = (post , event)=>{
     event.preventDefault()
     const postID = post._id
+    const postImage = post.image;
+    const commentImages = post.comments.filter(comment => comment.commentImage).map(comment => comment.commentImage);
+    const replyImages = post.comments.flatMap(comment => comment.replies).filter(reply => reply.replyImage).map(reply => reply.replyImage);
     Swal.fire({
         text:'are you sure you want to delete the post?',
         showCancelButton:true,
@@ -258,7 +268,10 @@ useEffect(()=>{
         if(result.isConfirmed) {
             axios.delete(`${process.env.API_URL}/delete-post`,{
                 data:{
-                    postID:postID
+                    postID:postID,
+                    postImage:postImage,
+                    commentImages:commentImages,
+                    replyImages:replyImages
                 },
                 headers:{
                   Authorization: `Bearer ${accountLogin.token_key}`
@@ -271,7 +284,17 @@ useEffect(()=>{
                     timer: 1500,
                     position:"top"
                 })
-                .then(()=>{
+                .then(async()=>{
+
+                  if(post.video){
+                    const deleteParams = {
+                        Bucket: process.env.S3_BUCKET_NAME_VIDEO,
+                        Key: post.video.Key
+                    };
+                    const s3 = new AWS.S3();
+                    await s3.deleteObject(deleteParams).promise();
+                }
+
                     setShowMenuToggle(null);
                     socket.emit('delete-post',{postID:postID})
                 })
@@ -340,6 +363,32 @@ useEffect(()=>{
        }
    })
 
+
+    //Reply
+    useEffect(() => {
+    const handleOnReply = ({postUpdated}) => {
+            setPosts(()=>{
+              const result = posts.map((post)=>{
+                  if(post.postID === postUpdated.postID){
+                      return postUpdated
+                  }else{
+                      return post
+                  }
+            })
+
+              return result
+            })
+        }
+        
+        socket.on('replyData', handleOnReply);
+
+      // Clean up the event listener when the component unmounts
+      return () => {
+           socket.off('replyData', handleOnReply);
+      };
+
+  }, [posts]);
+
   if(singleAccountLoading || displayPostLoading || allFriendGetLoading || allTalkingroomLoading){
     return(
     <div className='block'>
@@ -405,7 +454,7 @@ useEffect(()=>{
           {/* Profile image */}
           <div className="flex flex-col">
           <Link href={`/profile/${item.accountID}`}>
-            <img className=" rounded-full h-9 w-9 inline-block me-1" src={item.accountImage} alt="Profile picture"/>
+            <img className=" rounded-full h-9 w-9 inline-block me-1" src={item.accountImage.secure_url} alt="Profile picture"/>
           </Link>
           </div>
     
@@ -459,13 +508,13 @@ useEffect(()=>{
           </p>
           {/* Post Image */}
           {item.image &&
-            <img className="h-60 w-60 px-3 pb-3 rounded-2xl" src={item.image}  alt="Post picture"/>
+            <img className="h-60 w-60 px-3 pb-3 rounded-2xl" src={item.image.secure_url}  alt="Post picture"/>
           }
           {/* Post Video */}
           {item.video &&
                  <div className="px-3 pb-3">
                    <video height={100} width={300} className="bg-stone-900">
-                   <source src={`${item.video}#t=0.1`} type="video/mp4" />
+                   <source src={`${item.video.Location}#t=0.1`} type="video/mp4" />
                    Your browser does not support the video tag.
                   </video>
                 </div>
@@ -573,7 +622,7 @@ useEffect(()=>{
             </div>
             <div className={`w-full md:h-[88vh] h-[82dvh] pb-3 bg-[#383739] border-gray-500 text-white`}>
                   <div onClick={()=>{setShowProfileImage(true);}} className='flex-1 flex bg-stone-900 h-44 px-2 pt-28 items-center gap-1'>
-                    <img src={accountData.accountImage?accountData.accountImage:'/defaultProfile.png'} className='cursor-pointer h-24 w-24 rounded-full'/>
+                    <img src={accountData.accountImage?accountData.accountImage.secure_url:'/defaultProfile.png'} className='cursor-pointer h-24 w-24 rounded-full'/>
                   <div className='pt-2 flex flex-col'>
                      <div className='text-[0.9rem]'>{accountData.firstname} {accountData.lastname}</div>
                      <div className='text-[0.8rem]'>{accountData.username}</div>
@@ -615,7 +664,7 @@ useEffect(()=>{
             {accountData &&
             <div className={`w-3/12 hidden ${!chatroomToggle?'h-[88vh]':'h-screen'} pb-3 bg-[#383739] border-l border-gray-500 text-white lg:block`}>
                   <div onClick={()=>{setShowProfileImage(true);}} className='flex-1 flex bg-stone-900 h-44 px-2 pt-28 items-center gap-1'>
-                    <img src={accountData.accountImage?accountData.accountImage:'/defaultProfile.png'} className='cursor-pointer h-20 w-20 rounded-full'/>
+                    <img src={accountData.accountImage?accountData.accountImage.secure_url:'/defaultProfile.png'} className='cursor-pointer h-20 w-20 rounded-full'/>
                   <div className='pt-2 flex flex-col'>
                      <div className='text-[0.9rem] lg:break-words lg:w-20 xl:break-normal xl:w-auto'>{accountData.firstname} {accountData.lastname}</div>
                      <div className='text-[0.8rem]'>{accountData.username}</div>
@@ -653,7 +702,7 @@ useEffect(()=>{
                     <FontAwesomeIcon onClick={()=>{setShowProfileImage(false);}} icon={faClose} className="h-7 w-7 hover:text-gray-400 cursor-pointer"/>
                     </div>
                     <div className="p-3">
-                    <img className="h-56 w-56 rounded-md" src={accountData.accountImage} alt="Post picture"/>
+                    <img className="h-56 w-56 rounded-md" src={accountData.accountImage.secure_url} alt="Post picture"/>
                     </div>
                     </div>
                 </div>

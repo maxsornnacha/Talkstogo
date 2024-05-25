@@ -255,7 +255,7 @@ export default function Rooms(){
                     <div className="flex-1 flex items-center gap-1 p-2 break-all">
                     {room.roomIcon ?
                     <Link href={`/rooms/talking-room/${room.slug}`}>
-                    <img src={room.roomIcon} className="h-12 w-12 rounded-full"/>
+                    <img src={room.roomIcon.secure_url} className="h-12 w-12 rounded-full"/>
                     </Link>
                     :
                     <Link href={`/rooms/talking-room/${room.slug}`} className="bg-[#383739] rounded-full h-12 w-12">&nbsp;&nbsp;&nbsp;</Link>
