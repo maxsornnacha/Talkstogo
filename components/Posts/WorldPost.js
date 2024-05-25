@@ -12,7 +12,7 @@ import Navbar from "../Navbars/NavbarOther"
 import Swal from "sweetalert2"
 import EditForm from "./EditForm"
 import MenuOnRight from "../Menus/MenuOnRight"
-
+import AWS from 'aws-sdk'
 
 
 

@@ -20,6 +20,7 @@ import Swal from "sweetalert2"
 import EditForm from '@/components/Posts/EditForm'
 import LoaderBeforeFetching from '@/components/loader/LoaderBeforeFethcing'
 import Head from 'next/head'
+import AWS from 'aws-sdk'
 
 
 
