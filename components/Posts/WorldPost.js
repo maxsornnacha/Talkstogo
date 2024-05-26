@@ -1,5 +1,5 @@
 import Postform from "./PostForm"
-import { useState,useEffect } from "react"
+import { useState,useEffect,useRef } from "react"
 import LikeSystem from "../Likes/LikeSystem"
 import axios from "axios"
 import Link from "next/link"
@@ -7,7 +7,7 @@ import { io } from "socket.io-client"
 import CommentForm from "./CommentForm"
 const socket = io(process.env.API_SOCKET_URL)
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBars, faComment, faPerson, faThumbsUp } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faComment, faThumbsUp } from "@fortawesome/free-solid-svg-icons"
 import Navbar from "../Navbars/NavbarOther"
 import Swal from "sweetalert2"
 import EditForm from "./EditForm"
@@ -30,11 +30,78 @@ export default function WorldPost(props){
     const [posts,setPosts] = useState([])
     const [likeCount,setLikeCount] = useState(null)
     const [toggleComment,setToggleComment] = useState(false)
+    const [reachedBottom , setReachedBottom] = useState(false)
+    const [morePostsLoading , setMorePostsLoading] = useState(false);
+    const [noDataAnymore, setNoDataAnymore] = useState(false);
+    const [page , setPage] = useState(2);
+    const postBox = useRef(null);
 
+    //loadMorePosts();
+    const loadMorePosts = () =>{
+        const fetch=()=>{
+            axios.get(`${process.env.API_URL}/display-post`,{
+                params:{
+                    page:page
+                },
+                headers:{
+                    Authorization: `Bearer ${props.userData.token_key}`
+                  }
+            })
+            .then((response)=>{
+              if(response.data && response.data.length > 0){
+                setPosts((prevPosts) => [...prevPosts , ...response.data])
+                setPage(prevPage=>prevPage+1)
+              }else{
+                setNoDataAnymore(true);
+              }
+            })
+            .catch((error)=>{
+                console.log(error.response.data.error)
+            })
+            .finally(()=>{
+                setMorePostsLoading(false);
+            })
+        }
+
+        if(!noDataAnymore){
+            fetch()
+        }  
+    }
+
+    //Handle Post Box
+    const handleScroll = () => {
+        const { scrollTop, scrollHeight, clientHeight } = postBox.current;
+        // Check if scrolled to the bottom (with a small buffer)
+        if (scrollTop + clientHeight >= scrollHeight - 20 && !noDataAnymore) {
+            setMorePostsLoading(true);
+            setReachedBottom(true);
+        }else if(scrollTop + clientHeight < scrollHeight - 20 && !noDataAnymore){
+            setReachedBottom(false)
+        }
+      };
+
+      useEffect(() => {
+        if (reachedBottom && !noDataAnymore) {
+          loadMorePosts();
+        }
+      }, [reachedBottom]); 
+
+
+      useEffect(() => {
+        if (postBox.current) {
+          postBox.current.addEventListener('scroll', handleScroll);
+        }
+    
+        // Clean up event listener
+        return () => {
+          if (postBox.current) {
+            postBox.current.removeEventListener('scroll', handleScroll);
+          }
+        };
+      }, []);
 
     //Handle update post after created
     useEffect(()=>{
-
         const handleCreatePost = ({post})=>{
             setPosts((prev)=>{
                 return [post,...prev]
@@ -79,7 +146,7 @@ export default function WorldPost(props){
                   }
             })
             .then((response)=>{
-                setPosts(response.data.reverse())
+                setPosts(response.data)
             })
             .catch((error)=>{
                 console.log(error.response.data.error)
@@ -305,14 +372,15 @@ export default function WorldPost(props){
                 </div>  
         </div>
 
-        <div className="flex-1 flex flex-col h-[87dvh] md:h-[87vh] w-full overflow-auto">
+        <div ref={postBox} className="flex-1 flex flex-col h-[87dvh] md:h-[87vh] w-full overflow-auto">
 
             {/* Post Card */}
             {posts.length !== 0? 
             posts.map((item,index)=>{
                 
                 return(
-                <div className="mx-2 h-auto py-4 flex" key={item.postID}>
+                <div key={item.postID}>
+                <div className="mx-2 h-auto py-4 flex">
     
                 {/* Section 1 */}
                 {/* Profile image */}
@@ -401,8 +469,15 @@ export default function WorldPost(props){
                 </div>
                 </div>
 
+                </div>  
 
-                  </div>  
+                {posts.length-1 === index && morePostsLoading && !noDataAnymore && 
+                <div className="text-white w-full flex justify-center">
+                     <div className="loading-event-cover-page-1"></div>
+                </div>
+                }
+
+                </div>
             )
             })
             :
