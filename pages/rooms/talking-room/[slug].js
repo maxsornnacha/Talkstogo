@@ -27,6 +27,8 @@ import 'react-tooltip/dist/react-tooltip.css'
 import AWS from 'aws-sdk';
 import Head from "next/head"
 import LoaderPage from "@/components/loader/LoaderPage"
+import Navbar from "@/components/Navbars/NavbarOther"
+import NavbarRoomPermission from "@/components/Navbars/NavbaRoomPermission"
 
 
 export default function talkingroom(){
@@ -1592,7 +1594,7 @@ export default function talkingroom(){
     {return (
     <>
     <Head>
-      <title>{room.roomName} | TalkToGo</title>
+      <title>{room.roomName} | TalksToGo</title>
     </Head>
     <div>
     {/* If to check that you are really our members */}
@@ -2481,7 +2483,10 @@ export default function talkingroom(){
     </>
     :
     //Room permission, if you are not a member of the room
-    <div className="min-h-screen bg-[#383739] text-white flex flex-col items-center pt-56 gap-8">
+    <div className="h-screen bg-[#383739] text-white flex flex-col items-center">
+        
+        <NavbarRoomPermission userData={userData} />
+        <div className="flex flex-col items-center justify-center flex-1">
         {room && 
         <img src={room.roomIcon?room.roomIcon.secure_url:'/black-background.jpg'} className="w-40 h-40 rounded-full"/>
         }
@@ -2489,6 +2494,7 @@ export default function talkingroom(){
         {room && userData && 
         <Requests userData={userData} accountID={userData.accountData._id} roomID={room._id}/>
         }       
+        </div>
     </div>
     }   
 

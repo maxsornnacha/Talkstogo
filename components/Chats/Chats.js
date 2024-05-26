@@ -123,7 +123,7 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
                  //ทำการส่ง message realtime ผ่าน socket โดยใช้ roomIDเป็นตัวแบ่งห้อง
                  if(roomID || data){
                  socket.emit('updateMsg',{roomIDGet:roomID?roomID:data,messagesAll:response.data.messages})          
-                 }
+                }
 
             //เรียกใช้งาน อัพเดตแชท ใน meesenger
 
@@ -145,6 +145,7 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
                         return (filter.length > 0)
                     })
                     socket.emit('allMessages',{data:response.data, newUnreadMessages:filteredIsnotRead.length, userID:getterData._id})
+                    
                 }
             })
             .catch((error)=>{
@@ -251,6 +252,7 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
             setImgInput(null)
             //ทำการส่ง message realtime ผ่าน socket โดยใช้ roomIDเป็นตัวแบ่งห้อง
             socket.emit('sendMsg',{roomIDGet:roomID,message:response.data[response.data.length-1]})
+            socket.emit('notify-navbar',{getterID:getterData._id , type:'message'})
         })
         .catch((error)=>{
             console.log(error)
@@ -275,6 +277,7 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
             });
             //ทำการใช้งาน อ่านข้อความ เพื่อเช็คว่าอีกฝั่งอยู่ในแชทรึป่าว
             await handleReadMessageWhenSendingMsg(roomIDGet) 
+
           };  
 
         socket.on('message', handleMessage);
@@ -390,7 +393,7 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
             
             {msgData && !allMessagesLoading &&
             <div  className="bg-stone-900  w-full">
-            <div className="flex flex-col pb-5 px-1 w-full">
+            <div className="flex flex-col px-1 w-full">
             {msgData.map((data)=>{
                 return (
                 data.senderID !== senderData.accountData._id ?
@@ -412,7 +415,7 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
                 <div onDoubleClick={()=>handleDoubleClickCopy(data.content)} className="max-w-56 w-auto px-5 bg-purple-600 text-white text-[0.75rem] font-normal pt-4 break-words rounded-md">
                         {data.image ?<Link href={data.image.secure_url} target="blank"><img src={data.image.secure_url} className={`h-32 w-32 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></Link>:''}
                         {isURL(data.content)?<a className="text-green-400 hover:text-white text-[0.75rem]" target="_blank"  href={data.content}>{data.content}</a>:data.content}
-                    <div className="text-white text-end pt-3 text-[0.65rem]">{data.isRead?<FontAwesomeIcon icon={faCheck} className="text-green-300 h-3 w-3"/>:'Unread'} {convertTime(data.timestamp)}</div>
+                    <div className="text-white text-end pt-3 text-[0.65rem]">{data.isRead && <FontAwesomeIcon icon={faCheck} className="text-green-300 h-3 w-3"/>} {convertTime(data.timestamp)}</div>
                 </div>
                 <div className =' bg-stone-900 text-black ms-2 mt-4 pt-4 bg col-span-2 flex items-end'>
                     <Link href={`/profile/${sender.accountData.id}`}>

@@ -153,3 +153,17 @@ export const playSound2 = ()=>{
 }
 
 
+//play sound exit talkingChannel
+export const playSound3 = ()=>{
+  const audio = new Audio('/notification3.mp3');
+  audio.volume = 0.7;
+  audio.play();
+}
+
+export const playSound4 = ()=>{
+  const audio = new Audio('/notification4.mp3');
+  audio.volume = 0.7;
+  audio.play();
+}
+
+

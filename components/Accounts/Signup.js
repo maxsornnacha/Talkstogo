@@ -461,26 +461,26 @@ export default function Signup(props){
     <div>
         <div>
                    
-            <div className={`${talktogoAccount && infoInputToggle && ' md:w-[70vw] lg:w-[60vw] xl:w-[50vw] h-[85vh]'} ${talktogoAccount && OTPVerificationToggle && 'xl:w-[50vw] lg:w-[60vw] md:w-[70vw] w-[100vw] xl:h-[50vh] md:h-[50vh] h-[100vh]'} ${profileInputToggle && talktogoAccount && !profileImageCopperToggle && 'xl:w-[50vw] md:w-[80vw] w-[100vw] xl:h-[60vh] md:h-[80vh] h-[100vh]'} sign-form-up flex z-50 text-white bg-[#383739] overflow-auto`} > 
+            <div className={`${talktogoAccount && infoInputToggle && ' md:w-[70vw] lg:w-[60vw] xl:w-[50vw] h-[85vh]'} ${talktogoAccount && OTPVerificationToggle && 'xl:w-[50vw] lg:w-[60vw] md:w-[70vw] w-[100vw] xl:h-[50vh] md:h-[50vh] h-[100vh]'} ${profileInputToggle && talktogoAccount && !profileImageCopperToggle && 'xl:w-[50vw] md:w-[80vw] w-[100vw] xl:h-[60vh] md:h-[80vh] h-[100vh]'} sign-form-up flex z-50 text-white  overflow-auto p-2`} > 
             <div className={`hidden md:flex w-[230px] bg-purple-700  text-white text-[0.8rem]  flex-col justify-evenly px-1 ${profileImageCopperToggle && 'hidden'}`}>
                     <div className={`${infoInputToggle && talktogoAccount ? 'border-l-4 border-stone-100 px-2 py-2':'px-3'}`}>
-                        <FontAwesomeIcon icon={faUser} className="w-8 h-5 pt-2"/>
-                        <div className="font-bold">Section 1</div>
-                        <p className="">Account Information input</p>
+                        <FontAwesomeIcon icon={faUser} className="w-8 h-5 pt-2 bg-stone-800 rounded-full"/>
+                        <div className="font-normal">Section 1</div>
+                        <p className="text-gray-300 text-[0.7rem]">Account Information input</p>
                     </div>
                     <div className={`${OTPVerificationToggle && talktogoAccount ? 'border-l-4 border-stone-100 px-2 py-2':'px-3'}`}>
-                        <FontAwesomeIcon icon={faEnvelope} className="w-8 h-5 pt-2"/>
-                        <div className="font-bold">Section 2</div>
-                        <p>Email verification</p>
+                        <FontAwesomeIcon icon={faEnvelope} className="w-8 h-5 pt-2 bg-stone-800 rounded-full"/>
+                        <div className="font-normal">Section 2</div>
+                        <p className="text-gray-300 text-[0.7rem]">Email verification</p>
                     </div>
                     <div className={`${profileInputToggle && talktogoAccount ? 'border-l-4 border-stone-100 px-2 py-2':'px-3'}`}>
-                        <FontAwesomeIcon icon={faImage} className="w-8 h-5 pt-2"/>
-                        <div className="font-bold">Section 3</div>
-                        <p>Account image selection</p>
+                        <FontAwesomeIcon icon={faImage} className="w-8 h-5 pt-2 bg-stone-800 rounded-full"/>
+                        <div className="font-normal">Section 3</div>
+                        <p className="text-gray-300 text-[0.7rem]">Account image selection</p>
                     </div>
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 bg-[#383739]">
 
             <div className={`flex flex-col w-full bg-[#383739]`}>
 

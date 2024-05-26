@@ -104,7 +104,7 @@ export default function Friends(){
       return(
       <>
       <Head>
-        <title>Friends | TalkToGo</title>
+        <title>Friends | TalksToGo</title>
       </Head>
       <div className="bg-[#383739]">
       <div className={`${!roomOnMainLoading && !menuBarOnLeftLoading && !singleAccountDataLoading?'flex':'hidden'}`}>

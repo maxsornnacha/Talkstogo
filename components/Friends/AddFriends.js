@@ -41,6 +41,7 @@ export default function AddFriends({accountData,senderID,getterID,handleChatroom
                 status:response.data.status,
                 roomIDGet:roomID
             })
+            socket.emit('notify-navbar',{getterID:getterID , type:'friend-request'})
       
             //ทำการอัพเดตไปที่ จำนวนการส่งคำขอ ณ Navbar Other
              axios.get(`${process.env.API_URL}/all-friendRequest/${accountData._id}`,{

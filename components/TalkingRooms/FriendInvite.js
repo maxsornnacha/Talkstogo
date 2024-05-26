@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faArrowLeft, faLink, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faLink } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { io } from 'socket.io-client'
 import Link from "next/link"
@@ -74,7 +74,6 @@ export default function FriendInvite({userData , handleCloseInviteCard , roomYou
           senderID:userData.accountData._id,
           getterID:getterID,
           message:`${process.env.CLIENT_URL}/rooms/talking-room/${roomYouAreIn.slug}`,
-          image:roomYouAreIn.roomIcon
       },{
         headers:{
           Authorization: `Bearer ${userData.token_key}`
@@ -83,6 +82,7 @@ export default function FriendInvite({userData , handleCloseInviteCard , roomYou
       .then(async (response)=>{
           //ทำการส่ง message realtime ผ่าน socket โดยใช้ roomIDเป็นตัวแบ่งห้อง
           await socket.emit('sendMsg',{roomIDGet:roomID,message:response.data[response.data.length-1]})
+          socket.emit('notify-navbar',{getterID:getterID , type:'message'})
           
           //อัพเดตไปที่ messenger และ navbar เมื่อลิงค์ถูกส่ง
            await axios.get(`${process.env.API_URL}/all-messages/${getterID}`,{

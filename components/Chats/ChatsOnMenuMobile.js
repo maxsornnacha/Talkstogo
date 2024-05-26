@@ -251,6 +251,7 @@ export default function ChatroomMenuMobile({senderData,getterData,handleCloseCha
             setImgInput(null)
             //ทำการส่ง message realtime ผ่าน socket โดยใช้ roomIDเป็นตัวแบ่งห้อง
             socket.emit('sendMsg',{roomIDGet:roomID,message:response.data[response.data.length-1]})
+            socket.emit('notify-navbar',{getterID:getterData._id , type:'message'})
         })
         .catch((error)=>{
             console.log(error)
@@ -368,7 +369,7 @@ export default function ChatroomMenuMobile({senderData,getterData,handleCloseCha
              >
                   <div className="py-2 flex w-full gap-1 items-center ps-3  ">
                 <Link href={`/profile/${getter.id}`}>
-                 <img src={getter.accountImage} className="w-7 h-7 rounded-full"/>
+                 <img src={getter.accountImage.secure_url} className="w-7 h-7 rounded-full"/>
                 </Link>
                 <div className="flex flex-col">
                     <Link href={`/profile/${getter.id}`} className="hover:text-purple-300 text-[0.75rem]">
@@ -398,7 +399,7 @@ export default function ChatroomMenuMobile({senderData,getterData,handleCloseCha
                 <div className="flex gap-2 mt-2" key={data._id}>
                 <div className ='bg-stone-900 text-white flex items-end'>
                     <Link href={`/profile/${getter.id}`}>
-                    <img src={getter.accountImage} className="rounded-full inline w-6 h-6 "  alt="profile's picture"/>
+                    <img src={getter.accountImage.secure_url} className="rounded-full inline w-6 h-6 "  alt="profile's picture"/>
                     </Link>
                 </div>
                 <div onDoubleClick={()=>handleDoubleClickCopy(data.content)} className="max-w-56 w-auto px-2 bg-gray-700  text-white text-[0.75rem] font-normal pt-4 break-words rounded-md">
@@ -412,7 +413,7 @@ export default function ChatroomMenuMobile({senderData,getterData,handleCloseCha
                 <div onDoubleClick={()=>handleDoubleClickCopy(data.content)} className="max-w-56 w-auto px-5 bg-purple-600 text-white text-[0.75rem] font-normal pt-4 break-words rounded-md">
                         {data.image ?<Link href={data.image} target="blank"><img src={data.image} className={`h-32 w-32 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></Link>:''}
                         {isURL(data.content)?<a className="text-green-400 hover:text-white text-[0.75rem]" target="_blank"  href={data.content}>{data.content}</a>:data.content}
-                    <div className="text-white text-end pt-3 text-[0.65rem]">{data.isRead?<FontAwesomeIcon icon={faCheck} className="text-green-300 h-3 w-3"/>:'Unread'} {convertTime(data.timestamp)}</div>
+                    <div className="text-white text-end pt-3 text-[0.65rem]">{data.isRead && <FontAwesomeIcon icon={faCheck} className="text-green-300 h-3 w-3"/>} {convertTime(data.timestamp)}</div>
                 </div>
                 <div className =' bg-stone-900 text-black ms-2 mt-4 pt-4 bg col-span-2 flex items-end'>
                     <Link href={`/profile/${sender.accountData.id}`}>

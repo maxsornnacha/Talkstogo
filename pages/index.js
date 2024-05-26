@@ -53,7 +53,7 @@ export default function main(){
     return (
       <>
       <Head>
-        <title>Home | TalkToGo</title>
+        <title>Home | TalksToGo</title>
       </Head>
       <div className={`${!roomOnMainLoading && !MenuBarOnLoading && !WorldPostLoading ?'flex':'hidden'} main`} >
 

@@ -211,7 +211,7 @@ export default function Rooms(){
             return(
                 <>
                 <Head>
-                    <title>Talkingrooms | TalkToGo</title>
+                    <title>Talkingrooms | TalksToGo</title>
                 </Head>
                 <div className="bg-[#383739] w-full">
                 <div className={`w-full ${!roomOnMainLoading && !menuBarOnLeftLoading && !singleAccountDataLoading && !allTalkingroomsLoading?'flex':'hidden'}`}>
@@ -354,7 +354,7 @@ export default function Rooms(){
                 <div className=" flex justify-between w-full ">
                         {/* room icon and name */}
                         <div className="flex-1 flex items-center gap-2">
-                        <img src={room.roomIcon?room.roomIcon:'/black-background.jpg'} className="h-10 w-10 rounded-full"/>
+                        <img src={room.roomIcon?room.roomIcon.secure_url:'/black-background.jpg'} className="h-10 w-10 rounded-full"/>
                         <div className="flex flex-col">
                         <div className="text-[0.75rem] break-words">
                            {room.roomName.length > 15 ? room.roomName.slice(0,15)+'...':room.roomName}
@@ -395,7 +395,7 @@ export default function Rooms(){
                     <div className=" flex justify-between w-full ">
                             {/* room icon and name */}
                             <div className="flex-1 flex items-center gap-2">
-                            <img src={room.roomIcon?room.roomIcon:'/black-background.jpg'} className="h-10 w-10 rounded-full"/>
+                            <img src={room.roomIcon?room.roomIcon.secure_url:'/black-background.jpg'} className="h-10 w-10 rounded-full"/>
                             <div className="flex flex-col">
                             <div className="text-[0.75rem] break-words">
                                {room.roomName.length > 15 ? room.roomName.slice(0,15)+'...':room.roomName}

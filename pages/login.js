@@ -35,7 +35,7 @@ export default function Home() {
   return (
     <div>
     <Head>
-    <title>Login | TalkToGo</title>
+    <title>Login | TalksToGo</title>
     </Head>
     <div className={`md:hidden insert-picture-login text-gray-100 h-screen w-screen flex flex-col items-center`}>
           <div className="h-full">

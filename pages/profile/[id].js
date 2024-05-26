@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useState,useEffect } from "react"
+import { useState,useEffect, useRef } from "react"
 import { useRouter } from 'next/router'
 import Navbar from '@/components/Navbars/NavbarOther'
 import Link from 'next/link'
@@ -51,7 +51,79 @@ export default function Profile(){
   const [displayPostLoading, setDisplayPostLoading] = useState(true);
   const [allFriendGetLoading, setAllFriendGetLoading] = useState(true);
   const [allTalkingroomLoading, setAllTalkingRoomLoading] = useState(true);
-  
+
+  const [reachedBottom , setReachedBottom] = useState(false)
+  const [morePostsLoading , setMorePostsLoading] = useState(false);
+  const [noDataAnymore, setNoDataAnymore] = useState(false);
+  const [page , setPage] = useState(2);
+  const postProfileBox = useRef(null);
+
+
+   //loadMorePosts();
+   const loadMorePosts = () =>{
+    const fetch=()=>{
+        axios.get(`${process.env.API_URL}/display-post-profile/${id}`,{
+          params:{
+            page:page
+          },
+          headers:{
+            Authorization: `Bearer ${accountLogin.token_key}`
+          }
+        })
+        .then( (response)=>{
+          if(response.data && response.data.length > 0){
+            setPosts((prevPosts) => [...prevPosts , ...response.data])
+            setPage(prevPage=>prevPage+1)
+          }else{
+            setNoDataAnymore(true);
+          }
+        }).catch((error)=>{
+          Swal.fire({
+            error: 'error',
+            text:'The posts can not be found'
+          })
+       }).finally(()=>{
+          setMorePostsLoading(false);
+        })
+    }
+
+    if(!noDataAnymore){
+        fetch()
+    }  
+}
+
+//Handle Post Box
+const handleScroll = () => {
+  console.log(1)
+    const { scrollTop, scrollHeight, clientHeight } = postProfileBox.current;
+    // Check if scrolled to the bottom (with a small buffer)
+    if (scrollTop + clientHeight >= scrollHeight - 20 && !noDataAnymore) {
+       setMorePostsLoading(true);
+        setReachedBottom(true);
+    }else if(scrollTop + clientHeight < scrollHeight - 20 && !noDataAnymore){
+        setReachedBottom(false)
+    }
+  };
+
+  useEffect(() => {
+    if (reachedBottom && !noDataAnymore) {
+      loadMorePosts();
+    }
+  }, [reachedBottom]); 
+
+
+  useEffect(() => {
+    if (postProfileBox.current) {
+      postProfileBox.current.addEventListener('scroll', handleScroll);
+    }
+
+    // Clean up event listener
+    return () => {
+      if (postProfileBox.current) {
+        postProfileBox.current.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [toggle]);
 
   const RoomsOnMainLoadingStatus = () => {
     setRoomOnMainLoading(false);
@@ -88,9 +160,12 @@ export default function Profile(){
       }
     })
     .then( (response)=>{
-      setPosts(response.data.reverse())
+      setPosts(response.data)
   }).catch((error)=>{
-      setPosts(null)
+      Swal.fire({
+        error: 'error',
+        text:'The posts can not be found'
+      })
   }).finally(()=>{
       setDisplayPostLoading(false);
   })
@@ -427,7 +502,7 @@ useEffect(()=>{
         <div className='flex bg-[#383739]'>
             {/* section4 Option:All posts*/}
          {toggle === 'posts' && posts && !chatroomToggle && accountData &&
-            <div className='lg:w-9/12 w-full'>  
+            <div className='lg:w-9/12 w-full' >  
               <div className="p-2 bg-[#161617] md:bg-[rgba(0,0,0,0)] md:absolute top-1 left-[104px] md:left-[305px]">
                  <h1 className="text-[1rem] text-white font-normal"># {accountData.firstname === accountLogin.accountData.firstname?'My':accountData.firstname+"'s"} posts</h1>
                </div>
@@ -444,7 +519,7 @@ useEffect(()=>{
               </div>
   
               {/* Post Card */}
-            <div className=' flex flex-col md:h-[88vh] h-[82dvh] bg-[#383739] overflow-auto'>
+            <div ref={postProfileBox} className=' flex flex-col md:h-[88vh] h-[82dvh] bg-[#383739] overflow-auto'>
             {toggle === 'posts' && posts && posts.length > 0 &&
             posts.map((item,index)=>{
            return(
@@ -465,17 +540,21 @@ useEffect(()=>{
             <div className="flex justify-between items-center bg-stone-900 p-1">
             <Link href={`/profile/${item.accountID}`}>
             <div className="flex items-center">
-                <p className="inline-block text-white hover:text-gray-200 font-semibold  text-[0.75rem]">
-                <span className="font-semibold">{item.firstname} {item.lastname}</span>
-                <span> - {item.currentTime} &nbsp;{item.currentDate}</span>
-                </p> 
+                 <p className="hidden md:inline-block text-white hover:text-gray-200 font-semibold  text-[0.75rem]">
+                    <span className="font-normal">{item.firstname} {item.lastname}</span>
+                    <span> - {item.currentTime} &nbsp;{item.currentDate}</span>
+                 </p> 
+                 <p className="md:hidden flex flex-col text-white hover:text-gray-200 font-semibold  text-[0.75rem]">
+                    <span className="font-normal text-[0.7rem]">{item.firstname} {item.lastname}</span>
+                    <span className="font-normal text-[0.55rem] text-yellow-500"> {item.currentTime} &nbsp;{item.currentDate}</span>
+                 </p> 
             </div>
             </Link>
 
             {/* Comment and Like button */}
             <div className="text-white  flex flex-row justify-end py-2">
                 <FontAwesomeIcon icon={faBars} onClick={()=>{setShowMenuToggle(showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1?null:{status:true, menuNO:index+1});}} 
-                className={`w-4 h-4 cursor-pointer ${showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1?'text-purple-400':'text-white'} hover:text-purple-400 active:text-purple-400`}
+                className={`w-3 h-3 cursor-pointer ${showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1?'text-purple-400':'text-white'} hover:text-purple-400 active:text-purple-400`}
                 />
             {/* Menu Setting Display */}
             {showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1 &&
@@ -539,6 +618,12 @@ useEffect(()=>{
           </div>
 
            </div>  
+
+           {posts.length-1 === index && morePostsLoading && !noDataAnymore && 
+                <div className="text-white w-full flex justify-center">
+                     <div className="loading-event-cover-page-1"></div>
+                </div>
+           }
            </div>
            )
             })

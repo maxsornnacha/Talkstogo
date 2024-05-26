@@ -208,7 +208,7 @@ export default function Signin(props){
         .then(async (response)=>{  
             //login สำเร็จ
             Swal.fire({
-                text: 'Login successfully , welcome to TalkToGo',
+                text: 'Login successfully , welcome to TalksToGo',
                 showConfirmButton: false,
                 timer: 1500,
                 position: "top",
@@ -285,12 +285,12 @@ export default function Signin(props){
            
            <div className="h-screen py-6 flex flex-col items-center ">
             <div className="mb-10 flex flex-col items-center gap-1">
-            <FontAwesomeIcon icon={faPerson} className="w-20 h-20 rounded-md p-2 border-2 border-white "/>
-            <div className="font-bold">TALKTOGO</div>
+            <FontAwesomeIcon icon={faPerson} className="w-20 h-20 rounded-md p-2 border-2 bg-purple-700 border-white "/>
+            <div className="font-bold">TALKSTOGO</div>
             </div>
            <div className="relative py-3 sm:max-w-md sm:mx-auto w-[70vw]">
              <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-purple-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 rounded-md sm:rounded-3xl"></div>
-             <div className="relative px-4 py-10 bg-[#383739] shadow-lg sm:rounded-3xl ">
+             <div className="relative px-4 py-10 bg-[#383739] shadow-lg rounded-sm ">
                <div className="max-w-md mx-auto">
                  <div className="text-center">
                    <h1 className="text-[1.4rem] font-semibold text-white ">Login to your account</h1>
@@ -328,7 +328,7 @@ export default function Signin(props){
                      {isWrongEmail && <div className="text-red-400 text-[0.75rem] font-semibold ">Email is wrong</div>}
                      {isWrongPassword && <div className="text-red-400 text-[0.75rem] font-semibold">Password is wrong</div>}
                      <div className="relative">
-                       <button disabled={loadingEvent?true:false} onClick={handleSubmitForm} className="bg-purple-500 hover:bg-purple-600 text-white rounded-md h-10 w-full flex justify-center items-center text-[1rem] font-semibold">
+                       <button disabled={loadingEvent?true:false} onClick={handleSubmitForm} className="bg-purple-700 hover:bg-purple-600 text-white rounded-md h-10 w-full flex justify-center items-center text-[1rem] font-semibold">
                          {!loadingEvent ? 'Continue' : <div className="loader-event-dot text-[2px] w-2"></div>}
                        </button>
                      </div>

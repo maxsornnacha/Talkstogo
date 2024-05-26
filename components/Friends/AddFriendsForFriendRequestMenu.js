@@ -44,6 +44,7 @@ export default function AddFriendsList({senderID,getterID,userData}){
                 status:response.data.status,
                 roomIDGet:roomID
             })
+            socket.emit('notify-navbar',{getterID:getterID , type:'friend-request'})
 
                //อัพเดตข้อมูลไปที่ socket
             axios.get(`${process.env.API_URL}/all-friendRequest/${senderID}`,{

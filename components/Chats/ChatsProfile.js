@@ -219,6 +219,7 @@ export default function ChatroomProfile({senderData,getterData,handleCloseChat,u
     
             //ทำการส่ง message realtime ผ่าน socket โดยใช้ roomIDเป็นตัวแบ่งห้อง
             socket.emit('sendMsg',{roomIDGet:roomID,message:response.data[response.data.length-1]})
+            socket.emit('notify-navbar',{getterID:getterData._id , type:'message'})
         })
         .catch((error)=>{
             console.log(error)
@@ -369,7 +370,7 @@ export default function ChatroomProfile({senderData,getterData,handleCloseChat,u
                 <div onDoubleClick={()=>handleDoubleClickCopy(data.content)} className="max-w-56 w-auto px-5 bg-purple-500 text-white text-start text-[0.8rem] pt-4 break-words rounded-xl">
                 {data.image ?<Link href={data.image.secure_url} target="blank"><img src={data.image.secure_url} className={`h-32 w-32 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></Link>:''}
                     {isURL(data.content)?<a className="text-green-400 hover:text-white" target="_blank"  href={data.content}>{data.content}</a>:data.content}
-                <div className="bg-purple-500 text-white text-end pt-3 text-[0.7rem]">{data.isRead?<FontAwesomeIcon icon={faCheck} className="text-green-300 h-3 w-3"/>:'Unread'} {convertTime(data.timestamp)}</div>
+                <div className="bg-purple-500 text-white text-end pt-3 text-[0.7rem]">{data.isRead && <FontAwesomeIcon icon={faCheck} className="text-green-300 h-3 w-3"/>} {convertTime(data.timestamp)}</div>
                 </div>
                 <div className =' bg-[#1e1e1f] text-white ms-2 mt-4 pt-4 bg col-span-2 flex items-end'>
                     <Link href={`/profile/${sender.accountData.id}`}>

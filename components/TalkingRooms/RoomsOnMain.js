@@ -146,7 +146,7 @@ export default function RoomsOnMain({userData,roomYouAreIn,RoomsOnMainLoadingSta
            
             {/* Logo Displaying */}
             <Link className="pt-2 pb-2" href={'/'}>
-                <FontAwesomeIcon icon={faPerson} alt="logo" className="hover:bg-purple-800 cursor-pointer h-8 w-8 p-2 rounded-full bg-purple-500 text-white"/>
+                <FontAwesomeIcon icon={faPerson} alt="logo" className="hover:bg-purple-800 cursor-pointer h-8 w-8 p-2 rounded-full bg-purple-600 text-white"/>
             </Link>
 
 

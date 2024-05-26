@@ -58,6 +58,7 @@ export default function Requests({accountID,roomID , userData}){
             socket.emit('roomRequest-creator-side',{
                 creator:response.data.creator
             })
+
         })
         .catch((error)=>{
             Swal.fire({
@@ -70,8 +71,7 @@ export default function Requests({accountID,roomID , userData}){
 
     const handleCancelTheRequest=()=>{
         axios.delete(`${process.env.API_URL}/delete-room-request`,{
-            data:{accountID,roomID}
-        },{
+            data:{accountID,roomID},
             headers:{
                 Authorization: `Bearer ${userData.token_key}`
               }
@@ -93,6 +93,10 @@ export default function Requests({accountID,roomID , userData}){
              //จัดการ real-time handle สำหรับการ ส่งคำขอ admin side
              socket.emit('roomRequest-admin-side',{
                 admins:response.data.admins
+            })
+
+            socket.emit('roomRequest-creator-side',{
+                creator:response.data.creator
             })
         })
         .catch((error)=>{
@@ -150,12 +154,12 @@ export default function Requests({accountID,roomID , userData}){
     return (
         <div>
         { (!requestStatus) &&
-        <button onClick={handleRequestToTheRoom} className="rounded-md  hover:bg-blue-700 text-[1rem] md:text-[1.2rem] bg-blue-600 py-2 px-5">
+        <button onClick={handleRequestToTheRoom} className="rounded-md  hover:bg-blue-700 text-[1rem] bg-blue-600 py-2 px-5">
             Request to join
         </button>
         }
          { requestStatus &&
-        <button onClick={handleCancelTheRequest} className="rounded-md  hover:bg-blue-700 text-[1rem] md:text-[1.2rem] bg-blue-600 py-2 px-5">
+        <button onClick={handleCancelTheRequest} className="rounded-md  hover:bg-blue-700 text-[1rem] bg-blue-600 py-2 px-5">
             Pending
         </button>
         }

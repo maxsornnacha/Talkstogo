@@ -11,12 +11,13 @@ import { io } from "socket.io-client"
 const socket = io(process.env.API_SOCKET_URL)
 import { Tooltip } from "react-tooltip"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faComments,faMagnifyingGlass,faUserPlus, faPeopleGroup, faChevronDown} from "@fortawesome/free-solid-svg-icons"
+import { faComments,faMagnifyingGlass,faUserPlus, faPeopleGroup, faChevronDown, faPerson} from "@fortawesome/free-solid-svg-icons"
 import { playSound3 , playSound4 } from "@/modules/modules";
 import MenuBarOnNavbar from "../Menus/MenuBarOnNavbar";
 import Swal from "sweetalert2";
+import Link from "next/link";
 
-export default function Navbar(props){
+export default function NavbarRoomPermission(props){
     const [messengerToggle,setMessengerToggle] = useState(false)
     const [searchToggle,setSearchToggle] = useState(false)
     const [profileToggle,setProfileToggle] = useState(false)
@@ -293,7 +294,10 @@ export default function Navbar(props){
     return(
     <nav className="py-1 px-1 flex h-[48px] bg-stone-900 text-gray-100 w-full">
  
-        <div className="flex flex-1">
+        <div className="flex flex-1 gap-2 ps-1">
+            <Link href={'/'}>
+                <FontAwesomeIcon  icon={faPerson} alt="logo" className="hover:bg-purple-800 cursor-pointer h-7 w-7 p-1 rounded-full bg-purple-600 text-white"/>
+            </Link>
             <ul className="flex">
                 <li><FontAwesomeIcon icon={faChevronDown} onClick={()=>{menuToggle?setMenuToggle(false):setMenuToggle(true); setSearchToggle(false); setMessengerToggle(false); setProfileToggle(false); setFriendRequestToggle(false); setTalkingRoomToggle(false)}} alt="menu" className={menuToggle?"cursor-pointer  p-1 h-7 w-5  me-1 md:hidden lg:hidden text-purple-500":"cursor-pointer  p-1 h-7 w-5  pe-1 md:hidden lg:hidden hover:text-purple-500"}/></li>
             </ul>
@@ -390,7 +394,7 @@ export default function Navbar(props){
 
         
         {menuToggle &&
-        <div className="md:hidden w-full z-50 h-screen overflow-y-auto bg-[#161617] fixed top-0 left-[70px] ">
+        <div className="md:hidden w-full z-50 h-screen overflow-y-auto bg-[#161617] fixed top-0 left-[45px] ">
                 <MenuBarOnNavbar userData={props.userData} handleCloseMenuToggle={handleCloseMenuToggle}/>
         </div>
         }

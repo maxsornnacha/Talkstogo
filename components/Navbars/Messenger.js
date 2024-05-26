@@ -34,7 +34,6 @@ export default function Messenger({messages,userData,handleChatroomToggle,closeM
                     return (filter.length > 0)
                 })
                 setAllMessages(response.data)
-                socket.emit('allMessages',{data:response.data, newUnreadMessages:filteredIsnotRead.length, userID:userData.accountData._id})
             }
            
         })
