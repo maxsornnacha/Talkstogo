@@ -564,6 +564,7 @@ export default function talkingroom(){
       //เมื่อเข้าห้อง
       const handleTalkingRoomParticipants =(event , talkingroom)=>{
           event.preventDefault();
+          setConnecting(true); 
           setMicOnOff(true);
           setSpeakerOnOff(true);
           axios.put(`${process.env.API_URL}/member-get-in-talkingroom`,{
@@ -582,10 +583,41 @@ export default function talkingroom(){
              })
              await socket.emit('leave-out-of-the-roomChannel-to-enter-the-new-channel',{roomUpdated:response.data , channelUpdated:channelUpdated , senderID: userData.accountData._id})
             }
-     
+            
+            const roomEnteringUpdated = await response.data.talkingChannels.filter((talkingroom) => {
+              return talkingroom.participants.some((participant) => {
+                  return participant._id === userData.accountData._id; 
+              });
+            })
+
+            const roomEnteringPrev = await room.talkingChannels.filter((talkingroom) => {
+              return roomEnteringUpdated[0]._id === talkingroom._id
+            })
+
+  
+            //make sure that user connecting at the same time for more than 2 users
+  
+            if(roomEnteringUpdated[0].participants.length - roomEnteringPrev[0].participants.length <= 1){
             setIsInRoom(true)
             setRoom(response.data)
             await socket.emit('enter-to-the-room',{roomUpdated:response.data , senderID: userData.accountData._id})
+            }
+            else{
+              setConnecting(false);
+              Swal.fire({
+                icon:'error',
+                text:'There is someone joining this channel , please try again',
+              }).then(async ()=>{
+                await axios.put(`${process.env.API_URL}/member-get-out-of-talkingroom`, {
+                  userData: userData.accountData
+                },{
+                headers:{
+                  Authorization: `Bearer ${userData.token_key}`
+                }
+                });
+                setWhichTalkingRoomAmIIn(null);
+              })
+            }
 
             //เช็คว่าอยู่ห้องไหน
             await setWhichTalkingRoomAmIIn(()=>{
@@ -1047,11 +1079,44 @@ export default function talkingroom(){
 
         //When entering the talking channel
         useEffect(()=>{
-          const handleUpdateRoomAfterEnterToTheRoom = async ({roomUpdated , senderID}) =>{
+          const handleUpdateRoomAfterEnterToTheRoom = async ({roomUpdated , senderID}) =>{      
+        
             //When being in tha taking chanel
             if(roomUpdated && senderID === userData.accountData._id && LocalAudioRef.current){
-
-                const roomEntering = await roomUpdated.talkingChannels.filter((talkingroom) => {
+                
+              navigator.mediaDevices.enumerateDevices()
+              .then(devices => {
+                let hasVideoInput = false;
+                let hasAudioInput = false;
+            
+                devices.forEach(device => {
+                  if (device.kind === 'videoinput') {
+                    hasVideoInput = true;
+                  } else if (device.kind === 'audioinput') {
+                    hasAudioInput = true;
+                  }
+                });
+            
+                if (!hasAudioInput) {
+                    Swal.fire({
+                      icon:'warning',
+                      text:'No audio device found , you will not connect to the channel !',
+                      showConfirmButton: false,
+                      timer: 1500,
+                    })
+                    setWhichTalkingRoomAmIIn(roomEntering)
+                    socket.emit('offer-not-got-send',{roomUpdated:roomUpdated , senderID:userData.accountData._id})
+                } 
+              })
+              .catch((error) => {
+                console.log(error);
+                Swal.fire({
+                  icon:'error',
+                  text:'Audio device detection failed'
+                })
+              });
+              
+              const roomEntering = await roomUpdated.talkingChannels.filter((talkingroom) => {
                   return talkingroom.participants.some((participant) => {
                       return participant._id === senderID; 
                   });
@@ -1070,9 +1135,7 @@ export default function talkingroom(){
              .then(async (stream)=>{
                if(LocalAudioRef.current){
                    LocalAudioRef.current.srcObject = stream;
-                   setMyStream(stream); 
-                    //If i join in the room 
-                   setConnecting(true);        
+                   setMyStream(stream);    
                }else {
                  Swal.fire({
                    icon:'error',
@@ -1179,6 +1242,7 @@ export default function talkingroom(){
           }
 
           if(senderID === userData.accountData._id){
+            console.log('working');
               setConnecting(false);
               playSound();
           }
@@ -1235,9 +1299,6 @@ export default function talkingroom(){
                      }
                   })
 
-                   //Create non-init peer according to the number of offers that got
-                   setNonInitPeer((prev)=>[...prev , {from:me , to:object.from , peer:peer}])
-                  //connect or signal to the offer that got sent
                  peer.signal(object.offer)
 
                  //Peer stream
@@ -1271,13 +1332,17 @@ export default function talkingroom(){
       useEffect(()=>{
         const handleAcceptAnswer = async ({answer, from, userNO, to , roomEntering , roomUpdated , initNO})=>{
 
+          if(room._id === roomUpdated._id){
+            setRoom(roomUpdated)
+          }
+
           //Check if the answer send back to me 
           if(to === me && initPeer.length > 0){
             //ถ้าเราเป็นคนสุดท้ายที่เข้าจะ ทำการปิดการ loading เมื่อเชื่อต่อเสร็จแล้ว //ส่วนคนที่ไม่ใช่จะมีการแจ้งเตือน
             setConnecting(false);
             playSound();
             setWhichTalkingRoomAmIIn(roomEntering);
-            setRoom(roomUpdated);
+
 
               initPeer.forEach((object)=>{
                 //check if the user whom this peer sent to is the same as the user that sent this answer
@@ -1420,26 +1485,19 @@ export default function talkingroom(){
         event.preventDefault()
 
         if(initPeer.length > 0 ){
-        initPeer.forEach((object)=>{
-          object.peer.destroy();
-          object.peer.on('close', function () {
-            console.log('Init Peer connection closed');
-          });
+        initPeer.forEach(({peer})=>{
+            peer.destroy();
         });
         // Clear the initPeer state
-        setInitPeer([]);
+        setInitPeer();
       }
 
-      if(nonInitpeer.length > 0) {
-        nonInitpeer.forEach((NonInitobject)=>{
-          NonInitobject.peer.destroy();
-          NonInitobject.peer.on('close', function () {
-            console.log('Init Peer connection closed');
-          });
-        });
-          socket.emit('init-peers-connected-to-me-disconnect',{from:userData.accountData._id , userNO:userNO})
-      // Clear the initPeer state
-      setNonInitPeer([])
+      if(nonInitpeer.length > 0){
+          nonInitpeer.forEach(({peer})=>{
+            peer.destroy();
+          })
+          // Clear the non initPeer state
+        setNonInitPeer([]);
       }
 
       if(myStream){
@@ -1476,47 +1534,7 @@ export default function talkingroom(){
 
     }
 
-    useEffect(()=>{
-      const initPeersWhoConnectedToMeDisconnect = ({from , userNO})=>{
-        if(initPeer.length > 0){
-         initPeer.forEach((object)=>{
-              if(object.to === from){
-                object.peer.destroy();
-                object.peer.on('close', function () {
-                  console.log(`Init Peer connected to ID : ${from} closed`);
-                  setInitPeer(initPeer.filter((object)=>{
-                    return object.to !== from
-                  }))
-                });
-              }
-         })
-        }
-
-        if(nonInitpeer.length > 0){
-          initPeer.forEach((object)=>{
-            if(object.from === from){
-              object.peer.destroy();
-              object.peer.on('close', function () {
-                console.log(`Non Init Peer ID: ${from} that connected to you closed`);
-                setInitPeer(initPeer.filter((object)=>{
-                  return object.to !== from
-                }))
-              });
-            }
-       })
-        }
-
-      }
-
-      socket.on('init-peers-connected-to-me-disconnect',initPeersWhoConnectedToMeDisconnect)
-
-      return ()=>{
-        socket.off('init-peers-connected-to-me-disconnect',initPeersWhoConnectedToMeDisconnect)
-      }
-
-    },[initPeer ,remoteAudioRefs.current])
-
-
+  
 
     //About Toggle between Chat channel and Talking Channel Display
     const [CloseChatToggle, setClostChatToggle] = useState(false)
@@ -1920,9 +1938,8 @@ export default function talkingroom(){
             {whichTalkingRoomAmIIn[0].participants.length > 0 &&
             whichTalkingRoomAmIIn[0].participants.map((participant,index) =>{
             return (
-            <div id={`userAnother${index}`} className="md:col-span-6 lg:col-span-4 xl:col-span-3 bg-stone-600 h-56 p-1 m-1 flex flex-col justify-center items-center gap-2 rounded-md" key={index}>
+            <div id={`userAnother${index}`} className={`${whichTalkingRoomAmIIn[0].participants.length < 3?'col-span-12':'col-span-6'}  bg-stone-600  m-1 flex flex-col justify-center items-center rounded-md`} key={index}>
                 <img src={participant.accountImage.secure_url} className="w-20 h-20 rounded-full"/>
-                <div className="text-[0.8rem]">{participant.firstname} {participant.lastname}</div>
             </div>
             )
             })
@@ -1988,12 +2005,11 @@ export default function talkingroom(){
             </div>
             </div>
 
-            <div className="flex-1 md:hidden w-full p-4 overflow-y-auto text-white grid grid-cols-12">
+            <div className="flex-1 md:hidden w-full p-2  overflow-y-auto text-white grid grid-cols-12 gap-2">
              {talkingroom.participants.map((participant,index)=>{
                 return (
-                <div id={`userMobile${index}`} className="col-span-6 text-[0.8rem] m-2 bg-stone-700 h-56 flex flex-col items-center justify-center gap-2 rounded-md" key={index}>
-                    <div><img src={participant.accountImage.secure_url} className="h-10 w-10 md:h-6 md:w-6 rounded-full" /></div>
-                    <div>{participant.firstname} {participant.lastname}</div>
+                <div id={`userMobile${index}`} className={`${talkingroom.participants.length < 3?'col-span-12':'col-span-6 '} text-[0.8rem] bg-stone-700 h-full flex flex-col items-center justify-center gap-2 rounded-md `} key={index}>
+                    <div><img src={participant.accountImage.secure_url} className="h-20 w-20 md:h-6 md:w-6 rounded-full" /></div>
                     <audio 
                      ref={participant._id === userData.accountData._id ?(element)=>{LocalAudioRef.current = element;  remoteAudioRefs.current[index] = null; userNO.current = index;}:(element)=>{remoteAudioRefs.current[index] = element}} 
                      autoPlay muted={participant._id === userData.accountData._id ? true:false}/>

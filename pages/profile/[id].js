@@ -542,7 +542,7 @@ useEffect(()=>{
             <div className="flex items-center">
                  <p className="hidden md:inline-block text-white hover:text-gray-200 font-semibold  text-[0.75rem]">
                     <span className="font-normal">{item.firstname} {item.lastname}</span>
-                    <span> - {item.currentTime} &nbsp;{item.currentDate}</span>
+                    <span className="font-normal"> - {item.currentTime} &nbsp;{item.currentDate}</span>
                  </p> 
                  <p className="md:hidden flex flex-col text-white hover:text-gray-200 font-semibold  text-[0.75rem]">
                     <span className="font-normal text-[0.7rem]">{item.firstname} {item.lastname}</span>
