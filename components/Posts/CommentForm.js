@@ -212,7 +212,7 @@ export default function CommentForm(props){
                     <FontAwesomeIcon onClick={()=>{setShowPostImage(false);}} icon={faClose} className="h-7 w-7 hover:text-gray-400 cursor-pointer"/>
                     </div>
                     <div className="p-3">
-                    <img className="h-full w-full" src={props.post.image} alt="Post picture"/>
+                    <img className="h-full w-full" src={props.post.image.secure_url} alt="Post picture"/>
                     </div>
                     </div>
                 </div>

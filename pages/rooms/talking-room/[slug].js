@@ -1480,32 +1480,9 @@ export default function talkingroom(){
 
     }
 
-    //ค่อยแก้ พักไว้ก่อนละกัน
+    //Leave the channel
     const handleLeaveTheTalkingChannel = async (event)=>{
         event.preventDefault()
-
-        if(initPeer.length > 0 ){
-        initPeer.forEach(({peer})=>{
-            peer.destroy();
-        });
-        // Clear the initPeer state
-        setInitPeer();
-      }
-
-      if(nonInitpeer.length > 0){
-          nonInitpeer.forEach(({peer})=>{
-            peer.destroy();
-          })
-          // Clear the non initPeer state
-        setNonInitPeer([]);
-      }
-
-      if(myStream){
-        myStream.getTracks().forEach((track)=>{
-          track.stop();
-        })
-      }
-
       try {
         // Send request to server
         const response = await axios.put(`${process.env.API_URL}/member-get-out-of-talkingroom`, {
@@ -1515,6 +1492,9 @@ export default function talkingroom(){
             Authorization: `Bearer ${userData.token_key}`
           }
         });
+        
+        // Play sound after successful leave
+        playSound2();
 
         // Emit socket event
         await socket.emit('leave-out-of-the-roomChannel', {
@@ -1522,8 +1502,30 @@ export default function talkingroom(){
             senderID: userData.accountData._id
         });
 
-        // Play sound after successful leave
-        playSound2();
+
+        if(initPeer.length > 0 ){
+          initPeer.forEach(({peer})=>{
+              peer.destroy();
+          });
+          // Clear the initPeer state
+          setInitPeer([]);
+        }
+  
+        if(nonInitpeer.length > 0){
+            nonInitpeer.forEach(({peer})=>{
+              peer.destroy();
+            })
+            // Clear the non initPeer state
+          setNonInitPeer([]);
+        }
+
+        socket.emit('init-non-init-peers-connected-to-me-disconnect',{senderID:me , channelID:whichTalkingRoomAmIIn[0]._id})
+  
+        if(myStream){
+          myStream.getTracks().forEach((track)=>{
+            track.stop();
+          })
+        }
     } catch (error) {
         // Handle errors
         Swal.fire({
@@ -1533,6 +1535,49 @@ export default function talkingroom(){
     }
 
     }
+
+
+    useEffect(()=>{
+       const handleDestroyPeer = ({senderID , channelID}) => {
+          console.log(whichTalkingRoomAmIIn)
+          console.log(senderID)
+            console.log(channelID)
+        if(whichTalkingRoomAmIIn && whichTalkingRoomAmIIn.length !== 0){
+        if(whichTalkingRoomAmIIn[0]._id === channelID && senderID !== me){
+          //if you are initiator signaling to me
+          if(initPeer.length > 0 ){
+            initPeer.forEach((object)=>{
+              if(object.to === senderID){
+                object.peer.destroy();
+              }
+            });
+            // Clear the initPeer state
+            setInitPeer(initPeer.filter(object=>object.to !== senderID));
+          }
+
+          //if you are non initiator signaling to me
+          if(nonInitpeer.length > 0 ){
+            nonInitpeer.forEach((object)=>{
+              if(object.to === senderID){
+                object.peer.destroy();
+              }
+            });
+            // Clear the non initPeer state
+            setNonInitPeer(nonInitpeer.filter(object=>object.to !== senderID));
+          }
+
+        }
+       }
+         
+       }
+
+       socket.on('init-non-init-peers-connected-to-me-disconnect',handleDestroyPeer)
+
+
+       return ()=>{
+          socket.off('init-non-init-peers-connected-to-me-disconnect',handleDestroyPeer)
+       }
+    },[whichTalkingRoomAmIIn , me , initPeer , nonInitpeer])
 
   
 
