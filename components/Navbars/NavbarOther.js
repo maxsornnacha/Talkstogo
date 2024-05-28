@@ -341,7 +341,7 @@ export default function Navbar(props){
 
         {props.userData &&
         <div className="flex gap-1 items-center cursor-pointer ">
-            <img id="profile" onClick={()=>{setMenuToggle(false); setProfileToggle(profileToggle?false:true); setMessengerToggle(false); setTalkingRoomToggle(false); setSearchToggle(false); setFriendRequestToggle(false)}} className="outline-none rounded-full h-9 w-9 cursor-pointer" src={props.userData?props.userData.accountData.accountImage.secure_url:'/defaultProfile.png'} alt="Profile picture"/>
+            <img id="profile" onClick={()=>{setMenuToggle(false); setProfileToggle(profileToggle?false:true); setMessengerToggle(false); setTalkingRoomToggle(false); setSearchToggle(false); setFriendRequestToggle(false)}} className={`outline-none rounded-full h-9 w-9 cursor-pointer active:border-2 active:border-purple-700`}  src={props.userData?props.userData.accountData.accountImage.secure_url:'/defaultProfile.png'} alt="Profile picture"/>
         </div> 
         }
         <Tooltip 
@@ -364,6 +364,7 @@ export default function Navbar(props){
         </div>
         }
 
+        
         {searchToggle &&
         <div className="navbar-card max-h-5/6 overflow-auto">
             <Search userData={props.userData} handleClick={handleClick}/>
@@ -389,11 +390,11 @@ export default function Navbar(props){
         }
 
         
-        {menuToggle &&
-        <div className="md:hidden w-full z-50 h-screen overflow-y-auto bg-[#161617] fixed top-0 left-[70px] ">
-                <MenuBarOnNavbar userData={props.userData} handleCloseMenuToggle={handleCloseMenuToggle}/>
+
+        <div className={`md:hidden w-full z-50  overflow-y-auto bg-[#161617] fixed top-0 left-[70px]`}>
+                <MenuBarOnNavbar menuToggle={menuToggle} userData={props.userData} handleCloseMenuToggle={handleCloseMenuToggle}/>
         </div>
-        }
+
     </nav>
     )
 }

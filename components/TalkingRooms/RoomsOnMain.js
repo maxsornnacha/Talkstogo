@@ -146,7 +146,7 @@ export default function RoomsOnMain({userData,roomYouAreIn,RoomsOnMainLoadingSta
            
             {/* Logo Displaying */}
             <Link className="pt-2 pb-2" href={'/'}>
-                <FontAwesomeIcon icon={faPerson} alt="logo" className="hover:bg-purple-800 cursor-pointer h-8 w-8 p-2 rounded-full bg-purple-600 text-white"/>
+                <FontAwesomeIcon icon={faPerson} alt="logo" className=" hover:rounded-lg duration-200  cursor-pointer h-8 w-8 p-2 rounded-full bg-purple-600 text-white"/>
             </Link>
 
 
@@ -154,7 +154,7 @@ export default function RoomsOnMain({userData,roomYouAreIn,RoomsOnMainLoadingSta
             <button id="create-talking-room" onClick={()=>{setCreatingRoomToggle(creatingRoomToggle?false:true);}} 
             className="flex px-2  items-center gap-2 rounded-full"
             >
-            <FontAwesomeIcon icon={faPlus} className={`hover:text-white p-3  hover:rounded-xl h-6 w-6 hover:bg-purple-900 shadow-md ${creatingRoomToggle?'rounded-xl text-white bg-purple-900':'bg-[#383739]  text-purple-500 rounded-full'}`} src={'/add.png'} alt="Room picture"/>
+            <FontAwesomeIcon icon={faPlus} className={`hover:text-white p-3  hover:rounded-xl h-6 w-6 hover:bg-purple-900 shadow-md duration-100 ${creatingRoomToggle?'rounded-xl text-white bg-purple-900':'bg-[#383739]  text-purple-500 rounded-full'}`} src={'/add.png'} alt="Room picture"/>
             </button>
             <Tooltip 
             anchorSelect='#create-talking-room' place='right' className="hidden md:block" style={{fontSize:'0.7rem' , position:'fixed' , backgroundColor:'black', zIndex:'1000'}}
@@ -181,11 +181,11 @@ export default function RoomsOnMain({userData,roomYouAreIn,RoomsOnMainLoadingSta
             {room.roomName}
             </Tooltip>
              <div className="flex relative">
-                <div id={`dec-${index}`} className={`bg-white my-1 text-[3px] rounded-full absolute left-[-28px] rotate-45 w-8  ${roomYouAreIn && room._id === roomYouAreIn._id?'h-8 bottom-2':'h-3 bottom-5'}`}>&nbsp;</div>
+                <div id={`dec-${index}`} className={`bg-white my-1 text-[3px] rounded-full absolute left-[-28px] rotate-45 w-8 duration-500  ${roomYouAreIn && room._id === roomYouAreIn._id?'h-8 bottom-2':'h-3 bottom-5'}`}>&nbsp;</div>
                 {room.roomIcon ?
                  <Link id={`roomname-${index}`} passHref={true} className={`flex px-2 items-center gap-2 rounded-full pt-2`} href={`/rooms/talking-room/${room.slug}`}>
                     <img
-                    className={`hover:rounded-xl h-12 w-12 hover:bg-gray-500 shadow-md ${roomYouAreIn && room._id === roomYouAreIn._id?'rounded-xl':'rounded-full'}`}
+                    className={`hover:rounded-xl h-12 w-12 hover:bg-gray-500 shadow-md duration-100 ${roomYouAreIn && room._id === roomYouAreIn._id?'rounded-xl':'rounded-full'}`}
                     src={room.roomIcon.secure_url}
                     alt="Room Image" 
                     onMouseEnter={()=>handleMouseEnter(`dec-${index}`,room._id)}
@@ -197,7 +197,7 @@ export default function RoomsOnMain({userData,roomYouAreIn,RoomsOnMainLoadingSta
                  onMouseEnter={()=>handleMouseEnter(`dec-${index}`,room._id)}
                  onMouseLeave={()=>handleMouseLeave(`dec-${index}`,room._id)}
                  >
-                    <div className={`hover:rounded-xl bg-[#383739] text-[#383739] h-12 w-12 rounded-full ${roomYouAreIn && room._id === roomYouAreIn._id?'rounded-xl shadow-sm':'rounded-full'}`}
+                    <div className={`hover:rounded-xl bg-[#383739] text-[#383739] h-12 w-12 rounded-full duration-100 ${roomYouAreIn && room._id === roomYouAreIn._id?'rounded-xl shadow-sm':'rounded-full'}`}
                     >&nbsp;&nbsp;&nbsp;</div>
                  </Link>
                 }

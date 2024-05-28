@@ -1,8 +1,8 @@
 import axios from "axios"
 import { useState,useEffect } from "react"
 import { useToggle } from "./ToggleChatContext"
-import ChatroomMenuMobile from "./ChatsOnMenuMobile"
 import Chatroom from "./Chats"
+import Link from "next/link"
 
 export default function FriendList({userData}){
     const [allMessages,setAllMessages] = useState([])
@@ -92,23 +92,30 @@ export default function FriendList({userData}){
         return(
         <div className="flex flex-col gap-1" key={index}>
         {allChatAccounts[index] && allChatAccounts.length > 0 &&  
-
-        <div onClick={()=>{handleChatroomToggle(true); setMsgNumber(index+1); setToggle2();}} className=" px-2 py-1 rounded-md hover:bg-gray-700 hover:text-white hover:cursor-pointer flex items-center w-full">
+        <>
+        <div onClick={()=>{handleChatroomToggle(true); setMsgNumber(index+1); setToggle2();}} className="hidden  gap-2 px-2 py-1 rounded-md hover:bg-gray-700 hover:text-white hover:cursor-pointer md:flex items-center w-full">
             <img className="inline h-8 w-8 rounded-full" src={allChatAccounts[index].accountImage.secure_url}  alt="Friendlist"/>
-        <div>
-        <div className="ms-2 text-[0.75rem] font-normal flex gap-1">
-            <div>{allChatAccounts[index].firstname.length >= 10?allChatAccounts[index].firstname.slice(0,10)+'...':allChatAccounts[index].firstname}</div>
-            <div>{allChatAccounts[index].lastname.length >= 10?allChatAccounts[index].lastname.slice(0,10)+'...':allChatAccounts[index].lastname}</div>
+        <div className="flex-1 break-all">
+        <div className="text-[0.75rem] font-normal flex gap-1">
+            {allChatAccounts[index].firstname} {allChatAccounts[index].lastname}
         </div>
-        <div className="ms-2 text-[0.6rem] font-normal">Username: {allChatAccounts[index].username}</div>
+        <div className="text-[0.6rem] font-normal">Username: {allChatAccounts[index].username}</div>
         </div>
         </div>
+
+        <Link href={`/profile/${allChatAccounts[index].id}`} className="md:hidden gap-2 px-2 py-1 rounded-md hover:bg-gray-700 hover:text-white hover:cursor-pointer flex items-center w-full">
+            <img className="inline h-8 w-8 rounded-full" src={allChatAccounts[index].accountImage.secure_url}  alt="Friendlist"/>
+        <div className="flex-1 break-all">
+        <div className="text-[0.75rem] font-normal flex gap-1">
+            {allChatAccounts[index].firstname} {allChatAccounts[index].lastname}
+        </div>
+        <div className="text-[0.6rem] font-normal">Username: {allChatAccounts[index].username}</div>
+        </div>
+        </Link>
+
+        </>
         }    
-        {chatroomToggle && index+1 === msgNumber && isToggled2 &&
-        <div className="md:hidden w-full overlay-mobile-chat">
-                <ChatroomMenuMobile userData={userData}  handleCloseChat={handleCloseChat} senderData={userData} getterData={allChatAccounts[index]}/>
-        </div> 
-         }  
+
          {chatroomToggle && index+1 === msgNumber && isToggled2 &&
         <div className="hidden md:block">
                 <Chatroom userData={userData}  handleCloseChat={handleCloseChat} senderData={userData} getterData={allChatAccounts[index]}/>

@@ -4,7 +4,7 @@ import UserDataFetching from '@/services/UserDataFetching'
 import RoomsOnMain from "@/components/TalkingRooms/RoomsOnMain"
 import axios from "axios"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faVolumeLow , faVolumeXmark, faMicrophone, faMicrophoneSlash,  faPlus, faCircle, faArrowLeft, faUser, faGear, faGears, faPhone, faCircleDown} from "@fortawesome/free-solid-svg-icons"
+import { faVolumeLow , faVolumeXmark, faMicrophone, faMicrophoneSlash,  faPlus, faCircle, faArrowLeft, faUser, faGear, faGears, faPhone, faCircleDown, faClose} from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import Requests from "@/components/TalkingRooms/Requests"
 import Notfound from "@/components/404"
@@ -445,14 +445,22 @@ export default function talkingroom(){
         //เมื่อออกจากจากช่องพูดคุยนัั้นๆ จะทำการอัพเดตห้องพูดคุย แบบ real-time
         useEffect(()=>{
           const handleLeaveOutOfTheRoomchannel = async ({roomUpdated , senderID}) =>{
-    
-            if(room._id === roomUpdated._id && userData){
+
+            if(room && userData && room._id === roomUpdated._id){
+              if(senderID === userData.accountData._id){
+                remoteAudioRefs.current = [];
+                setOtherStreams([]);
+              }
+
+              if(senderID !== userData.accountData){
+                remoteAudioRefs.current = remoteAudioRefs.current.filter((remote)=>remote.userID !== senderID)
+              } 
+
               if(senderID === userData.accountData._id){
                 setIsInRoom(false);
                 setWhichTalkingRoomAmIIn(null);
               }
               setRoom(roomUpdated)
-
     
           
                //เช็คว่าตอนออกจากห้องมี คนอยู่ในห้องมั้ย ถ้ามี คนที่อยู่ในห้องนั้นๆก็จะได้ยินเสียงด้วยเหมือนกัน
@@ -477,7 +485,10 @@ export default function talkingroom(){
                             return participant._id === userData.accountData._id; 
                         });
                      })
-                    setWhichTalkingRoomAmIIn(talkingChannelUpdated)
+                     
+                     setWhichTalkingRoomAmIIn(talkingChannelUpdated)
+                     setRoom(roomUpdated);
+  
                     }
                   }
                 }
@@ -1065,8 +1076,8 @@ export default function talkingroom(){
       const [myStream , setMyStream] = useState(null)
       const [audioInput , setAudioInput] = useState(null)
       const [connecting , setConnecting] = useState(false);
-      const LocalAudioRef = useRef(null);
       const remoteAudioRefs = useRef([]);
+      const [otherStreams , setOtherStreams] = useState([]);
       const userNO = useRef(null);
 
 
@@ -1082,7 +1093,7 @@ export default function talkingroom(){
           const handleUpdateRoomAfterEnterToTheRoom = async ({roomUpdated , senderID}) =>{      
         
             //When being in tha taking chanel
-            if(roomUpdated && senderID === userData.accountData._id && LocalAudioRef.current){
+            if(roomUpdated && senderID === userData.accountData._id && remoteAudioRefs.current){
                 
               navigator.mediaDevices.enumerateDevices()
               .then(devices => {
@@ -1133,13 +1144,17 @@ export default function talkingroom(){
                { echoCancellation: true }
              })
              .then(async (stream)=>{
-               if(LocalAudioRef.current){
-                   LocalAudioRef.current.srcObject = stream;
-                   setMyStream(stream);    
+               if(remoteAudioRefs.current && remoteAudioRefs.current.filter((remote)=>remote.userID === userData.accountData._id).length > 0){
+                   remoteAudioRefs.current.map((remote)=>{
+                      if(remote.userID === userData.accountData._id){
+                        remote.audioRef.srcObject = stream;
+                        setMyStream(stream);
+                      }
+                   })  
                }else {
                  Swal.fire({
                    icon:'error',
-                   text:'LocalAudioRef is not initialized'
+                   text:'My Audio element is not initialized'
                  })
                }
              
@@ -1231,7 +1246,7 @@ export default function talkingroom(){
             socket.off('enter-to-the-room',handleUpdateRoomAfterEnterToTheRoom)
           }
   
-        },[room , userData , me , LocalAudioRef.current])
+        },[room , userData , me , remoteAudioRefs.current])
 
 
       useEffect(()=>{
@@ -1350,10 +1365,14 @@ export default function talkingroom(){
                   object.peer.signal(answer)
 
                   object.peer.on('stream',(stream)=>{
-                    if(remoteAudioRefs.current[userNO]){
-                      console.log(stream)
-                      console.log(remoteAudioRefs.current[userNO])
-                     remoteAudioRefs.current[userNO].srcObject = stream
+                    if(remoteAudioRefs.current.filter(remote=>remote.userID === userNO).length > 0){
+                      console.log(remoteAudioRefs.current.filter(remote=>remote.userID === userNO))
+                     remoteAudioRefs.current.forEach((remote)=>{
+                          if(remote.userID === userNO){
+                            remote.audioRef.srcObject = stream
+                            setOtherStreams((prev)=>[...prev , {userID:remote.userID , stream:stream}])
+                          }
+                     })
                     }
 
                   })
@@ -1386,11 +1405,17 @@ export default function talkingroom(){
 
   
           if (senderID === me && nonInitpeer.length > 0) {
-            if ( remoteAudioRefs.current[initNO]) {
+            if ( remoteAudioRefs.current.filter(remote=>remote.userID === initNO).length > 0) {
+              console.log(remoteAudioRefs.current.filter(remote=>remote.userID === initNO))
               // Stream to the offer creator or init peer
               nonInitpeer.forEach((object) => {
                 if (object.to === to) {
-                  remoteAudioRefs.current[initNO].srcObject = object.stream;
+                  remoteAudioRefs.current.forEach((remote)=>{
+                    if(remote.userID === initNO){
+                      remote.audioRef.srcObject = object.stream
+                      setOtherStreams((prev)=>[...prev , {userID:remote.userID , stream:object.stream}])
+                    }
+                  })
                 }
               });
               Swal.fire({
@@ -1435,9 +1460,9 @@ export default function talkingroom(){
 
     const handleSoundVolumeOff = ()=>{
           if(remoteAudioRefs.current.length > 1 && remoteAudioRefs.current){
-            remoteAudioRefs.current.forEach((audio)=>{
-              if(audio){
-                audio.muted = true
+            remoteAudioRefs.current.forEach((remote)=>{
+              if(remote.audioRef && remote.userID !== userData.accountData._id){
+                remote.audioRef.muted = true
               }
             })
           }
@@ -1445,9 +1470,9 @@ export default function talkingroom(){
 
     const handleSoundVolumeOn = ()=>{
       if(remoteAudioRefs.current.length > 1 && remoteAudioRefs.current){
-        remoteAudioRefs.current.forEach((audio)=>{
-          if(audio){
-            audio.muted = false
+        remoteAudioRefs.current.forEach((remote)=>{
+          if(remote.audioRef && remote.userID !== userData.accountData._id){
+            remote.audioRef.muted = false
           }
         })
       }
@@ -1519,7 +1544,7 @@ export default function talkingroom(){
           setNonInitPeer([]);
         }
 
-        socket.emit('init-non-init-peers-connected-to-me-disconnect',{senderID:me , channelID:whichTalkingRoomAmIIn[0]._id})
+        socket.emit('init-non-init-peers-connected-to-me-disconnect',{senderID:me , channelID:whichTalkingRoomAmIIn[0]._id , senderNO:userNO.current})
   
         if(myStream){
           myStream.getTracks().forEach((track)=>{
@@ -1538,10 +1563,9 @@ export default function talkingroom(){
 
 
     useEffect(()=>{
-       const handleDestroyPeer = ({senderID , channelID}) => {
-          console.log(whichTalkingRoomAmIIn)
-          console.log(senderID)
-            console.log(channelID)
+      //ปัญหาอาจจะเกี่ยวกับ Remote Audio
+       const handleDestroyPeer = ({senderID , channelID , senderNO}) => {
+
         if(whichTalkingRoomAmIIn && whichTalkingRoomAmIIn.length !== 0){
         if(whichTalkingRoomAmIIn[0]._id === channelID && senderID !== me){
           //if you are initiator signaling to me
@@ -1568,6 +1592,7 @@ export default function talkingroom(){
 
         }
        }
+
          
        }
 
@@ -1578,6 +1603,23 @@ export default function talkingroom(){
           socket.off('init-non-init-peers-connected-to-me-disconnect',handleDestroyPeer)
        }
     },[whichTalkingRoomAmIIn , me , initPeer , nonInitpeer])
+
+
+    useEffect(()=>{
+        if(otherStreams && remoteAudioRefs.current){
+          otherStreams.forEach((object)=>{
+              remoteAudioRefs.current.forEach((remote)=>{
+                if(remote.userID === object.userID){
+                  remote.audioRef.srcObject = object.stream
+                }
+              })
+          })
+        }
+
+    },[room])
+
+
+    
 
   
 
@@ -1641,7 +1683,10 @@ export default function talkingroom(){
       }
     };
 
-    
+
+    //Show Image
+    const [showImage , setShowImage] = useState(null);
+    const [showImageMobile , setShowImageMobile] = useState(null);
   
     
 
@@ -1715,12 +1760,12 @@ export default function talkingroom(){
             Chat channels
           </div>
           {isAdmin &&
-          <button id="create-chat-channel" onClick={()=>{setCreateChatroomCardToggle(true)}} className={`outline-none text-[1.2rem] font-bold hover:text-gray-300 ${createChatroomCardToggle?'text-purple-500':'text-white'}`}>
+          <button id="create-chat-channel" onClick={()=>{setCreateChatroomCardToggle(true)}} className={`outline-none text-[1.2rem] font-bold hover:text-purple-500 ${createChatroomCardToggle?'text-purple-500':'text-white'}`}>
             +
           </button>
           }
           {isCreator &&
-          <button id="create-chat-channel" onClick={()=>{setCreateChatroomCardToggle(true)}} className={`outline-none text-[1.2rem] font-bold hover:text-gray-300 ${createChatroomCardToggle?'text-purple-500':'text-white'}`}>
+          <button id="create-chat-channel" onClick={()=>{setCreateChatroomCardToggle(true)}} className={`outline-none text-[1.2rem] font-bold hover:text-purple-500 ${createChatroomCardToggle?'text-purple-500':'text-white'}`}>
             +
           </button>
           }
@@ -1747,12 +1792,12 @@ export default function talkingroom(){
             Talking channels
           </div>
           {isAdmin &&
-          <button id="create-talking-channel" onClick={()=>{setCreateTalkingroomCardToggle(true)}} className={`outline-none text-[1.2rem] font-bold hover:text-gray-300 ${createTalkingroomCardToggle?'text-purple-500':'text-white'}`}>
+          <button id="create-talking-channel" onClick={()=>{setCreateTalkingroomCardToggle(true)}} className={`outline-none text-[1.2rem] font-bold hover:text-purple-500 ${createTalkingroomCardToggle?'text-purple-500':'text-white'}`}>
             +
           </button>
           }
            {isCreator &&
-          <button id="create-talking-channel" onClick={()=>{setCreateTalkingroomCardToggle(true)}} className={`outline-none text-[1.2rem] font-bold hover:text-gray-300 ${createTalkingroomCardToggle?'text-purple-500':'text-white'}`}>
+          <button id="create-talking-channel" onClick={()=>{setCreateTalkingroomCardToggle(true)}} className={`outline-none text-[1.2rem] font-bold hover:text-purple-500 ${createTalkingroomCardToggle?'text-purple-500':'text-white'}`}>
             +
           </button>
           }
@@ -1772,7 +1817,20 @@ export default function talkingroom(){
                     <div><img src={participant.accountImage.secure_url} id={`user${index}-${talkingroom._id}`} className="h-5 w-5 rounded-full" /></div>
                     <div className="break-all text-start">{participant.firstname} {participant.lastname}</div>
                     <audio 
-                    ref={participant._id === userData.accountData._id ?(element)=>{LocalAudioRef.current = element;  remoteAudioRefs.current[index] = null; userNO.current = index;}:(element)=>{remoteAudioRefs.current[index] = element}} 
+                    ref={participant._id === userData.accountData._id ? 
+                      (element) => {
+                          if (element) {
+                              remoteAudioRefs.current[index] = { userID: participant._id, audioRef: element  }; // Storing audio element or ref
+                              userNO.current = participant._id;
+                          }
+                      } 
+                      : 
+                      (element ) => {
+                          if (element && whichTalkingRoomAmIIn && whichTalkingRoomAmIIn[0]._id === talkingroom._id) {
+                              remoteAudioRefs.current[index] = { userID: participant._id, audioRef: element  }; // Storing audio element or ref
+                          }
+                      }
+                  }
                      autoPlay muted={participant._id === userData.accountData._id ? true:false}/>
                 </div>
                 )
@@ -1788,24 +1846,24 @@ export default function talkingroom(){
         {/* Bottom side */}
         <div className="h-[64px] flex flex-col bg-stone-800 ">
         <div className="p-1 text-white bg-stone-600 flex justify-end items-center w-full">
-          {LocalAudioRef.current && whichTalkingRoomAmIIn?
+          {remoteAudioRefs.current && whichTalkingRoomAmIIn?
           <div className="flex gap-2 items-center">
           
           <button onClick={(event)=>{handleLeaveTheTalkingChannel(event); setTalkingroomFocus(null); setClostChatToggle(false);}} className="px-1 bg-red-600 hover:bg-red-700 active:bg-red-800 rounded-md text-[0.65rem]">LEAVE</button>
 
           { micOnOff  ?
-          <FontAwesomeIcon id="microphone" className={`w-3 h-3 cursor-pointer  ${LocalAudioRef.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faMicrophone} onClick={()=>{setMicOnOff(false); handleMicOff()}}/>
+          <FontAwesomeIcon id="microphone" className={`w-3 h-3 cursor-pointer  ${remoteAudioRefs.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faMicrophone} onClick={()=>{setMicOnOff(false); handleMicOff()}}/>
           :
-          <FontAwesomeIcon id="microphone" className={`w-3 h-3 cursor-pointer  ${LocalAudioRef.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faMicrophoneSlash} onClick={()=>{setMicOnOff(true); handleMicOn()}}/>
+          <FontAwesomeIcon id="microphone" className={`w-3 h-3 cursor-pointer  ${remoteAudioRefs.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faMicrophoneSlash} onClick={()=>{setMicOnOff(true); handleMicOn()}}/>
           }
 
 
           {remoteAudioRefs.current.length > 1  ?
           <>
           {speakerOnOff ?
-          <FontAwesomeIcon id="sound" className={`w-3 h-3 cursor-pointer  ${LocalAudioRef.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faVolumeLow} onClick={()=>{setSpeakerOnOff(false); handleSoundVolumeOff();}}/>
+          <FontAwesomeIcon id="sound" className={`w-3 h-3 cursor-pointer  ${remoteAudioRefs.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faVolumeLow} onClick={()=>{setSpeakerOnOff(false); handleSoundVolumeOff();}}/>
           :
-          <FontAwesomeIcon id="sound" className={`w-3 h-3 cursor-pointer  ${LocalAudioRef.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faVolumeXmark} onClick={()=>{setSpeakerOnOff(true); handleSoundVolumeOn();}}/>
+          <FontAwesomeIcon id="sound" className={`w-3 h-3 cursor-pointer  ${remoteAudioRefs.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faVolumeXmark} onClick={()=>{setSpeakerOnOff(true); handleSoundVolumeOn();}}/>
           }
           </>
           :
@@ -1816,8 +1874,8 @@ export default function talkingroom(){
           </div>
           :
           <div className="flex gap-2 items-center">
-          <FontAwesomeIcon id="microphone" className={`w-3 h-3 cursor-pointer ${LocalAudioRef.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faMicrophone}/>
-          <FontAwesomeIcon id="sound" className={`w-3 h-3 cursor-pointer ${LocalAudioRef.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faVolumeLow}/>
+          <FontAwesomeIcon id="microphone" className={`w-3 h-3 cursor-pointer ${remoteAudioRefs.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faMicrophone}/>
+          <FontAwesomeIcon id="sound" className={`w-3 h-3 cursor-pointer ${remoteAudioRefs.current?'outline-none':'outline-none cursor-default text-white'}`} icon={faVolumeLow}/>
           </div>
           }
           <Tooltip 
@@ -1897,12 +1955,12 @@ export default function talkingroom(){
             Chat channels
           </div>
           {isAdmin &&
-          <button id="create-chat-channel-mobile" onClick={()=>{setCreateChatroomCardToggle(true)}} className={`text-[1.5rem] font-bold hover:text-gray-300 ${createChatroomCardToggle?'text-purple-500':'text-white'}`}>
+          <button id="create-chat-channel-mobile" onClick={()=>{setCreateChatroomCardToggle(true)}} className={`text-[1.5rem] font-bold hover:text-purple-500 ${createChatroomCardToggle?'text-purple-500':'text-white'}`}>
             +
           </button>
           }
           {isCreator &&
-          <button id="create-chat-channel-mobile" onClick={()=>{setCreateChatroomCardToggle(true)}} className={`text-[1.5rem] font-bold hover:text-gray-300 ${createChatroomCardToggle?'text-purple-500':'text-white'}`}>
+          <button id="create-chat-channel-mobile" onClick={()=>{setCreateChatroomCardToggle(true)}} className={`text-[1.5rem] font-bold hover:text-purple-500 ${createChatroomCardToggle?'text-purple-500':'text-white'}`}>
             +
           </button>
           }
@@ -1930,12 +1988,12 @@ export default function talkingroom(){
             Talking channels
           </div>
           {isAdmin &&
-          <button id="create-talking-channel-mobile" onClick={()=>{setCreateTalkingroomCardToggle(true)}} className={`text-[1.5rem] font-bold hover:text-gray-300 ${createTalkingroomCardToggle?'text-purple-500':'text-white'}`}>
+          <button id="create-talking-channel-mobile" onClick={()=>{setCreateTalkingroomCardToggle(true)}} className={`text-[1.5rem] font-bold hover:text-purple-500 ${createTalkingroomCardToggle?'text-purple-500':'text-white'}`}>
             +
           </button>
           }
           {isCreator &&
-          <button id="create-talking-channel-mobile" onClick={()=>{setCreateTalkingroomCardToggle(true)}} className={`text-[1.5rem] font-bold hover:text-gray-300 ${createTalkingroomCardToggle?'text-purple-500':'text-white'}`}>
+          <button id="create-talking-channel-mobile" onClick={()=>{setCreateTalkingroomCardToggle(true)}} className={`text-[1.5rem] font-bold hover:text-purple-500 ${createTalkingroomCardToggle?'text-purple-500':'text-white'}`}>
             +
           </button>
           }
@@ -1993,23 +2051,23 @@ export default function talkingroom(){
         
 
   <div className="h-[70px] px-2 text-white flex justify-center items-center w-full">
-          {LocalAudioRef.current && whichTalkingRoomAmIIn?
+          {remoteAudioRefs.current && whichTalkingRoomAmIIn?
           <div className="flex gap-2 items-center">
           
           <FontAwesomeIcon icon={faPhone} onClick={(event)=>{handleLeaveTheTalkingChannel(event); setTalkingroomFocus(null); setClostChatToggle(false);}} className="rounded-full p-4 h-5 w-5 bg-red-600 hover:bg-red-500 cursor-pointer"/>
           { micOnOff  ?
-          <FontAwesomeIcon className={`cursor-pointer rounded-full p-4 h-5 w-5 bg-stone-600 hover:bg-stone-500  ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faMicrophone} onClick={()=>{setMicOnOff(false); handleMicOff()}}/>
+          <FontAwesomeIcon className={`cursor-pointer rounded-full p-4 h-5 w-5 bg-stone-600 hover:bg-stone-500  ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faMicrophone} onClick={()=>{setMicOnOff(false); handleMicOff()}}/>
           :
-          <FontAwesomeIcon className={`cursor-pointer rounded-full p-4 h-5 w-5 bg-stone-600 hover:bg-stone-500  ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faMicrophoneSlash} onClick={()=>{setMicOnOff(true); handleMicOn()}} />
+          <FontAwesomeIcon className={`cursor-pointer rounded-full p-4 h-5 w-5 bg-stone-600 hover:bg-stone-500  ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faMicrophoneSlash} onClick={()=>{setMicOnOff(true); handleMicOn()}} />
           }
 
 
           {remoteAudioRefs.current.length > 1  ?
           <>
           {speakerOnOff ?
-          <FontAwesomeIcon className={`cursor-pointer rounded-full p-4 h-5 w-5 bg-stone-600 hover:bg-stone-500 ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faVolumeLow} onClick={()=>{setSpeakerOnOff(false); handleSoundVolumeOff();}}/>
+          <FontAwesomeIcon className={`cursor-pointer rounded-full p-4 h-5 w-5 bg-stone-600 hover:bg-stone-500 ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faVolumeLow} onClick={()=>{setSpeakerOnOff(false); handleSoundVolumeOff();}}/>
           :
-          <FontAwesomeIcon className={`cursor-pointer rounded-full p-4 h-5 w-5 bg-stone-600 hover:bg-stone-500  ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faVolumeXmark} onClick={()=>{setSpeakerOnOff(true); handleSoundVolumeOn();}}/>
+          <FontAwesomeIcon className={`cursor-pointer rounded-full p-4 h-5 w-5 bg-stone-600 hover:bg-stone-500  ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faVolumeXmark} onClick={()=>{setSpeakerOnOff(true); handleSoundVolumeOn();}}/>
           }
           </>
           :
@@ -2020,8 +2078,8 @@ export default function talkingroom(){
           </div>
           :
           <div className="flex gap-2 items-center">
-          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-800 cursor-pointer ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faMicrophone}/>
-          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-800 cursor-pointer ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faVolumeLow}/>
+          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-800 cursor-pointer ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faMicrophone}/>
+          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-800 cursor-pointer ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faVolumeLow}/>
           </div>
           }
   </div>
@@ -2036,7 +2094,7 @@ export default function talkingroom(){
         {
         room.talkingChannels.map((talkingroom,index)=>{
           return (
-          <div>    
+          <div key={index}>    
           {talkingroomFocusedMobile === index+1 &&
           <div className="h-screen flex flex-col">
 
@@ -2056,7 +2114,20 @@ export default function talkingroom(){
                 <div id={`userMobile${index}`} className={`${talkingroom.participants.length < 3?'col-span-12':'col-span-6 '} text-[0.8rem] bg-stone-700 h-full flex flex-col items-center justify-center gap-2 rounded-md `} key={index}>
                     <div><img src={participant.accountImage.secure_url} className="h-20 w-20 md:h-6 md:w-6 rounded-full" /></div>
                     <audio 
-                     ref={participant._id === userData.accountData._id ?(element)=>{LocalAudioRef.current = element;  remoteAudioRefs.current[index] = null; userNO.current = index;}:(element)=>{remoteAudioRefs.current[index] = element}} 
+                      ref={participant._id === userData.accountData._id ? 
+                        (element) => {
+                            if (element) {
+                                remoteAudioRefs.current[index] = { userID: participant._id, audioRef: element  }; // Storing audio element or ref
+                                userNO.current = participant._id;
+                            }
+                        } 
+                        : 
+                        (element) => {
+                            if (element && whichTalkingRoomAmIIn && whichTalkingRoomAmIIn[0]._id === talkingroom._id) {
+                                remoteAudioRefs.current[index] = { userID: participant._id, audioRef: element   }; // Storing audio element or ref
+                            }
+                        }
+                    } 
                      autoPlay muted={participant._id === userData.accountData._id ? true:false}/>
                 </div>
                 )
@@ -2067,24 +2138,24 @@ export default function talkingroom(){
           <div className="h-[70px] bg-stone-900 w-full">
         <div className="h-[70px] px-2 text-white flex justify-between items-center w-full">
 
-          {LocalAudioRef.current && whichTalkingRoomAmIIn?
+          {remoteAudioRefs.current && whichTalkingRoomAmIIn?
           <div className="flex gap-4 items-center w-full justify-center">
 
           <FontAwesomeIcon icon={faPhone} onClick={(event)=>{handleLeaveTheTalkingChannel(event); setTalkingroomFocusMobile(null); setMobileMenuToggle(true);}} className="rounded-full p-4 h-5 w-5 bg-red-600 hover:bg-red-700 cursor-pointer"/>
 
           { micOnOff  ?
-          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faMicrophone} onClick={()=>{setMicOnOff(false); handleMicOff()}}/>
+          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faMicrophone} onClick={()=>{setMicOnOff(false); handleMicOff()}}/>
           :
-          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faMicrophoneSlash} onClick={()=>{setMicOnOff(true); handleMicOn()}} />
+          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faMicrophoneSlash} onClick={()=>{setMicOnOff(true); handleMicOn()}} />
           }
 
 
           {remoteAudioRefs.current.length > 1  ?
           <>
           {speakerOnOff ?
-          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faVolumeLow} onClick={()=>{setSpeakerOnOff(false); handleSoundVolumeOff();}}/>
+          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faVolumeLow} onClick={()=>{setSpeakerOnOff(false); handleSoundVolumeOff();}}/>
           :
-          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faVolumeXmark} onClick={()=>{setSpeakerOnOff(true); handleSoundVolumeOn();}}/>
+          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faVolumeXmark} onClick={()=>{setSpeakerOnOff(true); handleSoundVolumeOn();}}/>
           }
           </>
           :
@@ -2095,8 +2166,8 @@ export default function talkingroom(){
           </div>
           :
           <div className="flex gap-4 items-center">
-          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faMicrophone}/>
-          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${LocalAudioRef.current?'':'cursor-default text-white'}`} icon={faVolumeLow}/>
+          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faMicrophone}/>
+          <FontAwesomeIcon className={`rounded-full p-4 h-5 w-5 bg-stone-600 cursor-pointer ${remoteAudioRefs.current?'':'cursor-default text-white'}`} icon={faVolumeLow}/>
           </div>
           }
 
@@ -2129,7 +2200,7 @@ export default function talkingroom(){
                         <FontAwesomeIcon 
                         onClick={()=>{setChatroomMenuIndex(index+1); setChatroomMenuToggle(true)}}
                         icon={faGear} 
-                        className={`outline-none w-3 h-3 cursor-pointer hover:text-gray-200 ${chatroomMenuToggle?'text-purple-500':'text-white'}`}
+                        className={`outline-none w-3 h-3 cursor-pointer hover:text-purple-500 ${chatroomMenuToggle?'text-purple-500':'text-white'}`}
                         id="chat-channel-settings"
                         />
                        </div>
@@ -2139,7 +2210,7 @@ export default function talkingroom(){
                         <FontAwesomeIcon 
                         onClick={()=>{setChatroomMenuIndex(index+1); setChatroomMenuToggle(true)}}
                         icon={faGear} 
-                        className={`outline-none w-3 h-3 cursor-pointer hover:text-gray-200 ${chatroomMenuToggle?'text-purple-500':'text-white'}`}
+                        className={`outline-none w-3 h-3 cursor-pointer hover:text-purple-500 ${chatroomMenuToggle?'text-purple-500':'text-white'}`}
                         id="chat-channel-settings"
                         />
                        </div>
@@ -2166,13 +2237,13 @@ export default function talkingroom(){
                             <div className="text-white text-[0.9rem] flex gap-2 pb-10" key={index}>
                                 <div>
                                 <Link href={`/profile/${message.senderData.id}`}>
-                                  <img src={message.senderData.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
+                                  <img src={message.senderData.accountImage.secure_url} className="w-8 h-8 rounded-full hover:border-2 hover:border-purple-700 active:border-purple-700"/>
                                 </Link>
                                 </div>
 
                                 <div>
                                 <div className="flex gap-2 items-center font-normal text-[0.8rem]">
-                                    <Link href={`/profile/${message.senderData.id}`} className={`${room.admins.some((admin)=>admin.participant === message.senderData._id) && 'text-yellow-500 hover:text-yellow-600 active:text-yellow-600'} ${room.participants.some((p)=>p.participant === message.senderData._id) && 'text-white hover:text-gray-200 active:text-gray-200'} ${room.creator.some((creator)=>creator.participant === message.senderData._id) && 'text-purple-400 hover:text-purple-500 active:text-purple-500'}`}>
+                                    <Link href={`/profile/${message.senderData.id}`} className={`${room.admins.some((admin)=>admin.participant === message.senderData._id) && 'text-yellow-500 hover:text-yellow-600 active:text-yellow-600'} ${room.participants.some((p)=>p.participant === message.senderData._id) && 'text-white hover:text-purple-500 active:text-gray-200'} ${room.creator.some((creator)=>creator.participant === message.senderData._id) && 'text-purple-400 hover:text-purple-500 active:text-purple-500'}`}>
                                       {message.senderData.firstname} {message.senderData.lastname} ({room.admins.some((admin)=>admin.participant === message.senderData._id) && ' Admin'} {room.participants.some((p)=>p.participant === message.senderData._id) && 'Participant'} {room.creator.some((creator)=>creator.participant === message.senderData._id) && 'Leader '}) - 
                                       <span> {convertTime(message.timestamp)}</span>
                                     </Link>
@@ -2197,15 +2268,15 @@ export default function talkingroom(){
                                 </div>
                                 }
 
-                                <div className="grid grid-cols-12 w-[50vw] lg:w-[40vw]">
+                                <div className="grid grid-cols-12 w-[50vw] lg:w-[40vw] xl:w-[30vw] 2xl:w-[25vw]">
                                 {message.images.length === 1 &&
-                                 message.images.map((image,index) =>{
-                                    return <img src={image.image.secure_url} className="col-span-12 w-56 h-56 rounded-xl" key={index}/>
+                                 message.images.map((image,no) =>{
+                                    return <img onClick={()=>{setShowImage({status:true , msgNO:index+1 , imageNO:no});}} src={image.image.secure_url} className="cursor-pointer col-span-12 w-56 h-56 rounded-xl hover:border-2 hover:border-purple-700 active:border-purple-700" key={no}/>
                                  })
                                 }
                                 {message.images.length > 1 &&
-                                 message.images.map((image,index) =>{
-                                    return <img src={image.image.secure_url} className="col-span-6 max-h-96 h-full p-1 w-full rounded-xl " key={index}/>
+                                 message.images.map((image,no) =>{
+                                    return <img onClick={()=>{setShowImage({status:true , msgNO:index+1 , imageNO:no});}} src={image.image.secure_url} className="cursor-pointer col-span-6 max-h-96 h-full p-1 w-full rounded-xl hover:border-2 hover:border-purple-700 active:border-purple-700" key={no}/>
                                  })
                                 }
                                 {message.video &&
@@ -2279,7 +2350,7 @@ export default function talkingroom(){
                         <FontAwesomeIcon 
                         onClick={()=>{setChatroomMenuIndex(index+1); setChatroomMenuToggle(true)}}
                         icon={faGear} 
-                        className={`outline-none w-4 h-4 cursor-pointer hover:text-gray-200 ${chatroomMenuToggle?'text-purple-500':'text-white'}`}
+                        className={`outline-none w-4 h-4 cursor-pointer hover:text-purple-500 ${chatroomMenuToggle?'text-purple-500':'text-white'}`}
                         id="chat-channel-settings-mobile"
                         />
                        </div>
@@ -2289,7 +2360,7 @@ export default function talkingroom(){
                         <FontAwesomeIcon 
                         onClick={()=>{setChatroomMenuIndex(index+1); setChatroomMenuToggle(true)}}
                         icon={faGear} 
-                        className={`outline-none w-4 h-4 cursor-pointer hover:text-gray-200 ${chatroomMenuToggle?'text-purple-500':'text-white'}`}
+                        className={`outline-none w-4 h-4 cursor-pointer hover:text-purple-500 ${chatroomMenuToggle?'text-purple-500':'text-white'}`}
                         id="chat-channel-settings-mobile"
                         />
                        </div>
@@ -2315,13 +2386,13 @@ export default function talkingroom(){
                             <div className="text-white text-[0.9rem] flex gap-2 pb-10" key={index}>
                                 <div>
                                 <Link href={`/profile/${message.senderData.id}`}>
-                                  <img src={message.senderData.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
+                                  <img src={message.senderData.accountImage.secure_url} className="w-8 h-8 rounded-full hover:border hover:border-purple-700 active:border-purple-700"/>
                                 </Link>
                                 </div>
 
                                 <div>
                                 <div className="flex gap-2 items-center text-[0.8rem]">
-                                    <Link href={`/profile/${message.senderData.id}`} className={`${room.admins.some((admin)=>admin.participant === message.senderData._id) && 'text-yellow-500 hover:text-yellow-600 active:text-yellow-600'} ${room.participants.some((p)=>p.participant === message.senderData._id) && 'text-white hover:text-gray-200 active:text-gray-200'} ${room.creator.some((creator)=>creator.participant === message.senderData._id) && 'text-purple-400 hover:text-purple-500 active:text-purple-500'}`}>
+                                    <Link href={`/profile/${message.senderData.id}`} className={`${room.admins.some((admin)=>admin.participant === message.senderData._id) && 'text-yellow-500 hover:text-yellow-600 active:text-yellow-600'} ${room.participants.some((p)=>p.participant === message.senderData._id) && 'text-white hover:text-purple-500 active:text-gray-200'} ${room.creator.some((creator)=>creator.participant === message.senderData._id) && 'text-purple-400 hover:text-purple-500 active:text-purple-500'}`}>
                                       {message.senderData.firstname} {message.senderData.lastname} ({room.admins.some((admin)=>admin.participant === message.senderData._id) && ' Admin'} {room.participants.some((p)=>p.participant === message.senderData._id) && 'Participant'} {room.creator.some((creator)=>creator.participant === message.senderData._id) && 'Leader '}) - 
                                       <span> {convertTime(message.timestamp)}</span>
                                     </Link>
@@ -2344,15 +2415,15 @@ export default function talkingroom(){
                                 </div>
                                 }
 
-                                <div className="grid grid-cols-12 mt-3">
+                                <div className="grid grid-cols-12 mt-3 w-[70vw]">
                                 {message.images.length === 1 &&
-                                 message.images.map((image , index) =>{
-                                    return <img src={image.image.secure_url} className="col-span-12 w-56 h-56 rounded-md" key={index}/>
+                                 message.images.map((image , no) =>{
+                                    return <img onClick={()=>{setShowImageMobile({status:true , msgNO:index+1 , imageNO:no});}} src={image.image.secure_url} className="cursor-pointer col-span-12 w-56 h-56 rounded-md hover:border-2 hover:border-purple-700 active:border-purple-700" key={index}/>
                                  })
                                 }
                                 {message.images.length > 1 &&
-                                 message.images.map((image , index) =>{
-                                    return <img src={image.image.secure_url} className="col-span-6 w-44 h-44  rounded-md " key={index}/>
+                                 message.images.map((image , no) =>{
+                                    return <img onClick={()=>{setShowImageMobile({status:true , msgNO:index+1 , imageNO:no});}} src={image.image.secure_url} className="cursor-pointer col-span-6 w-full h-full  rounded-md hover:border-2 hover:border-purple-700 active:border-purple-700" key={index}/>
                                  })
                                 }
                                  {message.video &&
@@ -2404,6 +2475,34 @@ export default function talkingroom(){
                 )
               })}
 
+
+              {showImage && showImage.status &&
+              <div className="overlay flex flex-col">
+                  <div className="image-card w-auto h-auto p-3 md:w-auto bg-[rgba(0,0,0,0.7)] rounded-xl border-2 border-purple-700">
+                                    <div className="w-full h-8 text-white z-10">
+                                        <FontAwesomeIcon onClick={()=>{setShowImage(null);}} icon={faClose} className="h-7 w-7 hover:text-purple-500 cursor-pointer"/>
+                                    </div>
+                                    <div className="p-3 flex justify-center">
+                                        <img className="max-h-[90vh] md:max-h-[60vh] md:max-w-[70vw] md:w-auto w-full" src={room.chatChannels[chatroomFocused].messages[showImage.msgNO-1].images[showImage.imageNO].image.secure_url} alt="Post picture"/>
+                                    </div>
+                  </div>
+              </div>
+            }
+
+            {showImageMobile && showImageMobile.status &&
+              <div className="overlay flex flex-col">
+                  <div className="image-card w-auto h-auto p-3 md:w-auto bg-[rgba(0,0,0,0.7)] rounded-xl border-2 border-purple-700">
+                                    <div className="w-full h-8 text-white z-10">
+                                        <FontAwesomeIcon onClick={()=>{setShowImageMobile(null);}} icon={faClose} className="h-7 w-7 hover:text-purple-500 cursor-pointer"/>
+                                    </div>
+                                    <div className="p-3 flex justify-center">
+                                        <img className="max-h-[90vh] md:max-h-[60vh] md:max-w-[70vw] md:w-auto w-full" src={room.chatChannels[chatroomFocused].messages[showImageMobile.msgNO-1].images[showImageMobile.imageNO].image.secure_url} alt="Post picture"/>
+                                    </div>
+                  </div>
+              </div>
+            }
+
+
           {/* Section 3 for Ipad and PC only , not mobile */}
          {/* member displaying*/}
          <div className="hidden lg:flex flex-col h-screen w-[200px] border-l border-stone-600">
@@ -2447,9 +2546,10 @@ export default function talkingroom(){
               <Link href={`/profile/${creator.id}`}>
               <div><img src={creator.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
-              <FontAwesomeIcon icon={faCircle} className={`${creatorStatus[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2 border-2 border-[#383739] rounded-full absolute left-5 top-4`}/> 
+              <FontAwesomeIcon icon={faCircle} className={`${creatorStatus[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2 border-2 border-[#383739] rounded-full absolute left-[18px] top-5`}/> 
+              {creatorStatus[index] === 'online' && <div className="animate-ping bg-green-400 w-2 h-2 rounded-full absolute left-[20px] top-[21px]"></div>}
               <Link href={`/profile/${creator.id}`}>
-              <div className="text-[0.7rem] text-white hover:text-gray-200">{creator.firstname} {creator.lastname}</div>
+              <div className="text-[0.7rem] text-white hover:text-purple-500">{creator.firstname} {creator.lastname}</div>
               </Link>
           </div>
           )
@@ -2470,9 +2570,10 @@ export default function talkingroom(){
               <Link href={`/profile/${admin.id}`}>
               <div><img src={admin.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
-              <FontAwesomeIcon icon={faCircle} className={`${adminStatuses[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2 border-2 border-[#383739] rounded-full absolute left-5 top-4`}/> 
+              <FontAwesomeIcon icon={faCircle} className={`${adminStatuses[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2 border-2 border-[#383739] rounded-full absolute left-[18px] top-5`}/> 
+              {adminStatuses[index] === 'online' && <div className="animate-ping bg-green-400 w-2 h-2 rounded-full absolute left-[20px] top-[21px]"></div>}
               <Link href={`/profile/${admin.id}`}>
-              <div className="text-[0.7rem] text-white hover:text-gray-200">{admin.firstname} {admin.lastname}</div>
+              <div className="text-[0.7rem] text-white hover:text-purple-500">{admin.firstname} {admin.lastname}</div>
               </Link>
           </div>
           )
@@ -2501,9 +2602,10 @@ export default function talkingroom(){
               <Link href={`/profile/${participant.id}`}>
               <div><img src={participant.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
-              <FontAwesomeIcon icon={faCircle} className={`${participantStatuses[index] === 'online' ?'text-green-400':'text-red-500'} w-2 h-2 border-2 border-[#383739] rounded-full absolute left-5 top-4`}/> 
+              <FontAwesomeIcon icon={faCircle} className={`${participantStatuses[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2 border-2 border-[#383739] rounded-full absolute left-[18px] top-5`}/> 
+              {participantStatuses[index] === 'online' && <div className="animate-ping bg-green-400 w-2 h-2 rounded-full absolute left-[20px] top-[21px]"></div>}
               <Link href={`/profile/${participant.id}`}>
-              <div className="text-[0.7rem] text-white hover:text-gray-200">{participant.firstname} {participant.lastname}</div>
+              <div className="text-[0.7rem] text-white hover:text-purple-500">{participant.firstname} {participant.lastname}</div>
               </Link>
           </div>
           )

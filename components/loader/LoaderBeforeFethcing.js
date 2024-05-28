@@ -3,12 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function LoaderBeforeFetching(){
     return (
-     <div className="h-screen bg-[#383739] flex flex-col justify-center items-center gap-10">
-    <div className="flex justify-center items-end gap-4">
-    <FontAwesomeIcon icon={faPerson} className="text-[5rem] h-28 w-28 bg-purple-700 p-2 rounded-full text-white animate-pulse"/>
-    <div className="text-white"><div className="loader-progress"></div></div>
+     <div className="h-screen bg-[#383739] flex flex-col justify-center items-center">
+    <div className="flex justify-center items-end gap-2">
+    <FontAwesomeIcon icon={faPerson} className="text-[5rem] h-28 w-28 rounded-xl border-2 bg-purple-600 p-2 pt-3 text-white animate-bounce"/>
     </div>
-    <div className="text-white text-[1rem] animate-bounce hidden">We are loading the webpage, please wait a few second</div>
+    <div className="text-white text-[1.5rem] animate-bounce font-normal">TALKSTOGO</div>
     </div>
     )
 }

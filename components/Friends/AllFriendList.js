@@ -61,11 +61,11 @@ export default function AllFriendList({accountID,friendDataUpdate,accountLogin,d
              {/* responsive design for notebook and pc*/}
              <Link href={`/profile/${friendAccountData.id}`} className="flex">
             <div className="flex justify-center">
-                <img src={friendAccountData.accountImage.secure_url} className="h-9 w-9 md:rounded-full m-2  rounded-t-md hidden md:block" />
+                <img src={friendAccountData.accountImage.secure_url} className="h-9 w-9 md:rounded-full m-2  rounded-t-md hidden md:block hover:border-2 hover:border-purple-700 active:border-purple-700" />
             </div>
             <div className="flex flex-col justify-center">
-            <div className="text-[0.8rem] font-normal w-full break-words  hidden md:block">{friendAccountData.firstname} {friendAccountData.lastname}</div>
-            <div className="text-[0.75rem] hidden md:block">{friendAccountData.username}</div>
+            <div className="text-[0.8rem] font-normal w-full break-words hidden md:block hover:text-purple-500 active:text-purple-500">{friendAccountData.firstname} {friendAccountData.lastname}</div>
+            <div className="text-[0.75rem] hidden md:block hover:text-purple-500 active:text-purple-500">{friendAccountData.username}</div>
             </div>
             </Link>
             {!(accountLogin.accountData._id === friendAccountData._id) &&
@@ -83,10 +83,10 @@ export default function AllFriendList({accountID,friendDataUpdate,accountLogin,d
              {/* responsive design for mobile */}
             <div className="flex justify-between md:hidden h-auto px-1 py-2">
             <Link href={`/profile/${friendAccountData.id}`} className="flex items-center gap-1 w-7/12 ">
-                <img src={friendAccountData.accountImage.secure_url} className="w-8 h-8 rounded-full" />
+                <img src={friendAccountData.accountImage.secure_url} className="w-8 h-8 rounded-full hover:border hover:border-purple-700 active:border-purple-700" />
                 <div className="flex flex-col">
-                <div className="text-[0.75rem] text-start font-semibold w-full break-words ">{friendAccountData.firstname} {friendAccountData.lastname}</div>
-                <div className="text-[0.7rem] text-start">Username : {friendAccountData.username}</div>
+                <div className="text-[0.75rem] text-start font-semibold w-full break-words hover:text-purple-500 active:text-purple-500">{friendAccountData.firstname} {friendAccountData.lastname}</div>
+                <div className="text-[0.7rem] text-start hover:text-purple-500 active:text-purple-500">Username : {friendAccountData.username}</div>
                 </div>
             </Link>
             {!(accountLogin.accountData._id === friendAccountData._id) &&
@@ -123,11 +123,11 @@ export default function AllFriendList({accountID,friendDataUpdate,accountLogin,d
              {/* responsive design for notebook and pc*/}
              <Link href={`/profile/${friendAccountData.id}`} className="flex">
             <div className="flex justify-center">
-                <img src={friendAccountData.accountImage.secure_url} className="h-9 w-9 md:rounded-full m-2  rounded-t-md hidden md:block" />
+                <img src={friendAccountData.accountImage.secure_url} className="h-9 w-9 md:rounded-full m-2  rounded-t-md hidden md:block hover:border-2 hover:border-purple-700 active:border-purple-700" />
             </div>
             <div className="flex flex-col justify-center">
-            <div className="text-[0.8rem] font-normal w-full break-words  hidden md:block">{friendAccountData.firstname} {friendAccountData.lastname}</div>
-            <div className="text-[0.75rem] hidden md:block">{friendAccountData.username}</div>
+            <div className="text-[0.8rem] font-normal w-full break-words  hidden md:block hover:text-purple-500 active:text-purple-500">{friendAccountData.firstname} {friendAccountData.lastname}</div>
+            <div className="text-[0.75rem] hidden md:block hover:text-purple-500 active:text-purple-500">{friendAccountData.username}</div>
             </div>
             </Link>
             {!(accountLogin.accountData._id === friendAccountData._id) &&
@@ -145,10 +145,10 @@ export default function AllFriendList({accountID,friendDataUpdate,accountLogin,d
                  {/* responsive design for mobile*/}
             <div className="flex justify-between md:hidden h-auto px-1 py-2">
             <Link href={`/profile/${friendAccountData.id}`} className="flex items-center gap-1 w-7/12 ">
-                <img src={friendAccountData.accountImage.secure_url} className="w-8 h-8 rounded-full" />
+                <img src={friendAccountData.accountImage.secure_url} className="w-8 h-8 rounded-full hover:border hover:border-purple-700 active:border-purple-700" />
                 <div className="flex flex-col">
-                <div className="text-[0.75rem] text-start font-semibold w-full break-words ">{friendAccountData.firstname} {friendAccountData.lastname}</div>
-                <div className="text-[0.7rem] text-start">Username : {friendAccountData.username}</div>
+                <div className="text-[0.75rem] text-start font-semibold w-full break-words hover:text-purple-500 active:text-purple-500">{friendAccountData.firstname} {friendAccountData.lastname}</div>
+                <div className="text-[0.7rem] text-start hover:text-purple-500 active:text-purple-500">Username : {friendAccountData.username}</div>
                 </div>
             </Link>
             {!(accountLogin.accountData._id === friendAccountData._id) &&

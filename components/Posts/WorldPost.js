@@ -386,7 +386,7 @@ export default function WorldPost(props){
                 {/* Profile image */}
                  <div className="flex flex-col">
                 <Link href={`/profile/${item.accountID}`}>
-                 <img className=" rounded-full h-8 w-8 inline-block me-1" src={item.accountImage.secure_url} alt="Profile picture"/>
+                 <img className=" rounded-full h-9 w-9 inline-block me-1 hover:border-2 hover:border-purple-700 active:border-purple-700" src={item.accountImage.secure_url} alt="Profile picture"/>
                  </Link>
                  </div>
                 
@@ -396,11 +396,11 @@ export default function WorldPost(props){
                 <div className="flex justify-between items-center bg-stone-900 p-1">
                  <Link href={`/profile/${item.accountID}`}>
                  <div className="flex items-center">
-                 <p className="hidden md:inline-block text-white hover:text-gray-200 font-semibold  text-[0.75rem]">
+                 <p className="hidden md:inline-block text-white hover:text-purple-400 font-semibold  text-[0.75rem]">
                     <span className="font-normal">{item.firstname} {item.lastname}</span>
                     <span className="font-normal"> - {item.currentTime} &nbsp;{item.currentDate}</span>
                  </p> 
-                 <p className="md:hidden flex flex-col text-white hover:text-gray-200 font-semibold  text-[0.75rem]">
+                 <p className="md:hidden flex flex-col text-white hover:text-purple-400 font-semibold  text-[0.75rem]">
                     <span className="font-normal text-[0.7rem]">{item.firstname} {item.lastname}</span>
                     <span className="font-normal text-[0.55rem] text-yellow-500"> {item.currentTime} &nbsp;{item.currentDate}</span>
                  </p> 
@@ -409,7 +409,7 @@ export default function WorldPost(props){
                 {/* Comment and Like button */}
                 <div className="text-white  flex flex-row justify-end py-2">
                     <FontAwesomeIcon icon={faBars} onClick={()=>{setShowMenuToggle(showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1?null:{status:true, menuNO:index+1});}} 
-                    className={`w-3 h-3 cursor-pointer ${showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1?'text-purple-400':'text-white'} hover:text-purple-400 active:text-purple-400`}
+                    className={`w-4 h-4 lg:w-3 lg:h-3 cursor-pointer ${showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1?'text-purple-400':'text-white'} hover:text-purple-400 active:text-purple-400`}
                     />
                  {/* Menu Setting Display */}
                  {showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1 &&

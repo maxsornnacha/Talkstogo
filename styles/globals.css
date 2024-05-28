@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Dosis:wght@200..800&family=Reddit+Mono:wght@200..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 .swal2-popup {
   font-size: 0.8rem;
@@ -46,6 +47,11 @@
   box-sizing: border-box;
   margin: 0px;
   padding: 0px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+  line-height: 1.5;
+  
 }
 
 .h-screen{
@@ -93,7 +99,9 @@
   top:50%;
   left:50%;
   transform: translate(-50%,-50%);
-  z-index: 10;
+  z-index: 9999;
+  width: 100vw !important;
+  height: 100vh !important;
 }
 .image-card-post-form{
   position: fixed;
@@ -156,17 +164,15 @@
   top: 46px;
   right: 0.5%; /* Adjust the right value based on your design */
   background-color: #161617;
-  padding-top: 1rem;
-  padding-bottom: 2rem;
   border-radius: 2%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 300px; /* Adjust the initial width as needed */
-  height: 80vh;
   overflow: auto;
   color: rgb(255, 255, 255);
   z-index: 100;
+  width: 300px; /* Adjust the initial width as needed */
+  height: 80vh;
 }
 .navbar-card-profile{
   position: absolute;

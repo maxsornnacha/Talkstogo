@@ -813,10 +813,10 @@ export default function RoomSetting({isInRoom,userData,roomYouAreIn,handleCloseR
         </div>
 
         <div className="flex flex-wrap w-full text-[0.8rem]">
-                <button onClick={()=>setWhichSetting(1)} className={`flex-1 bg-stone-900 py-2 ${whichSetting === 1 && 'border-b-2 border-gray-600'}`}>Common</button>
-                {isAdmin && <button onClick={()=>setWhichSetting(2)} className={`flex-1 bg-stone-900 py-2 ${whichSetting === 2 && 'border-b-2 border-gray-600'}`}>Member management</button>}
-                {isCreator && <button onClick={()=>setWhichSetting(2)} className={`flex-1 bg-stone-900 py-2 ${whichSetting === 2 && 'border-b-2 border-gray-600'}`}>Member management</button>}
-                <button onClick={()=>setWhichSetting(3)} className={`flex-1 bg-stone-900 py-2 ${whichSetting === 3 && 'border-b-2 border-gray-600'}`}>Talking channel management</button>
+                <button onClick={()=>setWhichSetting(1)} className={`flex-1 bg-stone-900 py-2  hover:bg-purple-600 ${whichSetting === 1 && 'border-b-2 border-purple-600'}`}>Common</button>
+                {isAdmin && <button onClick={()=>setWhichSetting(2)} className={`flex-1 bg-stone-900 py-2  hover:bg-purple-600 ${whichSetting === 2 && 'border-b-2 border-purple-600'}`}>Member management</button>}
+                {isCreator && <button onClick={()=>setWhichSetting(2)} className={`flex-1 bg-stone-900 py-2  hover:bg-purple-600 ${whichSetting === 2 && 'border-b-2 border-purple-600'}`}>Member management</button>}
+                <button onClick={()=>setWhichSetting(3)} className={`flex-1 bg-stone-900 py-2  hover:bg-purple-600 ${whichSetting === 3 && 'border-b-2 border-purple-600'}`}>Talking channel management</button>
             </div>
 
 

@@ -507,13 +507,13 @@ useEffect(()=>{
                  <h1 className="text-[1rem] text-white font-normal"># {accountData.firstname === accountLogin.accountData.firstname?'My':accountData.firstname+"'s"} posts</h1>
                </div>
                <div className='bg-[#161617]  flex'>
-               <button onClick={()=>{setToggle('profile'); setChatroomToggle(false)}} className={`${toggle === 'profile' && !chatroomToggle && 'text-white border-b-2 border-purple-400'} transition duration-500 hover:border-b-2 hover:border-purple-400 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
+               <button onClick={()=>{setToggle('profile'); setChatroomToggle(false)}} className={`${toggle === 'profile' && !chatroomToggle && 'text-white border-b-2 border-purple-600'} hover:bg-purple-600 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
                 Profile
                 </button>
-               <button onClick={()=>{setToggle('posts'); setChatroomToggle(false)}} className={`${toggle === 'posts' && !chatroomToggle && 'text-white border-b-2 border-purple-400'} transition duration-500  hover:border-b-2 hover:border-purple-400 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
+               <button onClick={()=>{setToggle('posts'); setChatroomToggle(false)}} className={`${toggle === 'posts' && !chatroomToggle && 'text-white border-b-2 border-purple-600'}  hover:bg-purple-600 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
                 Posts
                 </button>
-                <button onClick={()=>{setToggle('friends'); setChatroomToggle(false)}} className={`${toggle === 'friends' && !chatroomToggle && 'text-white border-b-2 border-purple-400'} transition  duration-500   hover:border-b-2 hover:border-purple-400 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
+                <button onClick={()=>{setToggle('friends'); setChatroomToggle(false)}} className={`${toggle === 'friends' && !chatroomToggle && 'text-white border-b-2 border-purple-600'}  hover:bg-purple-600 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
                 Friends
                 </button>
               </div>
@@ -530,7 +530,7 @@ useEffect(()=>{
           {/* Profile image */}
           <div className="flex flex-col">
           <Link href={`/profile/${item.accountID}`}>
-            <img className=" rounded-full h-9 w-9 inline-block me-1" src={item.accountImage.secure_url} alt="Profile picture"/>
+            <img className=" rounded-full h-9 w-9 inline-block me-1 hover:border-2 hover:border-purple-700 active:border-purple-700" src={item.accountImage.secure_url} alt="Profile picture"/>
           </Link>
           </div>
     
@@ -554,7 +554,7 @@ useEffect(()=>{
             {/* Comment and Like button */}
             <div className="text-white  flex flex-row justify-end py-2">
                 <FontAwesomeIcon icon={faBars} onClick={()=>{setShowMenuToggle(showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1?null:{status:true, menuNO:index+1});}} 
-                className={`w-3 h-3 cursor-pointer ${showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1?'text-purple-400':'text-white'} hover:text-purple-400 active:text-purple-400`}
+                className={`w-4 h-4 lg:w-3 lg:h-3 cursor-pointer ${showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1?'text-purple-400':'text-white'} hover:text-purple-400 active:text-purple-400`}
                 />
             {/* Menu Setting Display */}
             {showMenuToggle && showMenuToggle.status && showMenuToggle.menuNO === index+1 &&
@@ -672,13 +672,13 @@ useEffect(()=>{
                  <h1 className="text-[1rem] text-white font-normal"># {accountData.firstname === accountLogin.accountData.firstname?'My':accountData.firstname+"'s"} friends</h1>
                </div>
                <div className='bg-[#161617]  flex'>
-               <button onClick={()=>{setToggle('profile'); setChatroomToggle(false)}} className={`${toggle === 'profile' && !chatroomToggle && 'text-white border-b-2 border-purple-400'} transition duration-500  hover:border-b-2 hover:border-purple-400 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
+               <button onClick={()=>{setToggle('profile'); setChatroomToggle(false)}} className={`${toggle === 'profile' && !chatroomToggle && 'text-white border-b-2 border-purple-600'}    hover:bg-purple-600 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
                 Profile
                 </button>
-               <button onClick={()=>{setToggle('posts'); setChatroomToggle(false)}} className={`${toggle === 'posts' && !chatroomToggle && 'text-white border-b-2 border-purple-400'} transition duration-500  hover:border-b-2 hover:border-purple-400 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
+               <button onClick={()=>{setToggle('posts'); setChatroomToggle(false)}} className={`${toggle === 'posts' && !chatroomToggle && 'text-white border-b-2 border-purple-600'}    hover:bg-purple-600 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
                 Posts
                 </button>
-                <button onClick={()=>{setToggle('friends'); setChatroomToggle(false)}} className={`${toggle === 'friends' && !chatroomToggle && 'text-white border-b-2 border-purple-400'} transition duration-500  hover:border-b-2 hover:border-purple-400 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
+                <button onClick={()=>{setToggle('friends'); setChatroomToggle(false)}} className={`${toggle === 'friends' && !chatroomToggle && 'text-white border-b-2 border-purple-600'}    hover:bg-purple-600 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
                 Friends
                 </button>
               </div>
@@ -696,19 +696,19 @@ useEffect(()=>{
                <h1 className="text-[1rem] text-white font-normal"># {accountData.firstname === accountLogin.accountData.firstname?'My':accountData.firstname+"'s"} profile</h1>
              </div>
              <div className='bg-[#161617]  flex'>
-             <button onClick={()=>{setToggle('profile'); setChatroomToggle(false)}} className={`${toggle === 'profile' && !chatroomToggle && 'text-white border-b-2 border-purple-400'} transition duration-500  hover:border-b-2 hover:border-purple-400 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
+             <button onClick={()=>{setToggle('profile'); setChatroomToggle(false)}} className={`${toggle === 'profile' && !chatroomToggle && 'text-white border-b-2 border-purple-600'}    hover:bg-purple-600 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
               Profile
               </button>
-             <button onClick={()=>{setToggle('posts'); setChatroomToggle(false)}} className={`${toggle === 'posts' && !chatroomToggle && 'text-white border-b-2 border-purple-400'} transition duration-500  hover:border-b-2 hover:border-purple-400 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
+             <button onClick={()=>{setToggle('posts'); setChatroomToggle(false)}} className={`${toggle === 'posts' && !chatroomToggle && 'text-white border-b-2 border-purple-600'}    hover:bg-purple-600 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
               Posts
               </button>
-              <button onClick={()=>{setToggle('friends'); setChatroomToggle(false)}} className={`${toggle === 'friends' && !chatroomToggle && 'text-white border-b-2 border-purple-400'} transition duration-500  hover:border-b-2 hover:border-purple-400 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
+              <button onClick={()=>{setToggle('friends'); setChatroomToggle(false)}} className={`${toggle === 'friends' && !chatroomToggle && 'text-white border-b-2 border-purple-600'}    hover:bg-purple-600 flex-1 py-2 px-2 shadow-md text-white bg-stone-800 text-[0.8rem]`}>
               Friends
               </button>
             </div>
             <div className={`w-full md:h-[88vh] h-[82dvh] pb-3 bg-[#383739] border-gray-500 text-white`}>
-                  <div onClick={()=>{setShowProfileImage(true);}} className='flex-1 flex bg-stone-900 h-44 px-2 pt-28 items-center gap-1'>
-                    <img src={accountData.accountImage?accountData.accountImage.secure_url:'/defaultProfile.png'} className='cursor-pointer h-24 w-24 rounded-full'/>
+                  <div  className='flex-1 flex bg-stone-900 h-44 px-2 pt-28 items-center gap-1'>
+                    <img src={accountData.accountImage?accountData.accountImage.secure_url:'/defaultProfile.png'} onClick={()=>{setShowProfileImage(true);}}   className='cursor-pointer h-24 w-24 rounded-full hover:border-2 hover:border-purple-700 active:border-purple-700'/>
                   <div className='pt-2 flex flex-col'>
                      <div className='text-[0.9rem]'>{accountData.firstname} {accountData.lastname}</div>
                      <div className='text-[0.8rem]'>{accountData.username}</div>
@@ -749,11 +749,11 @@ useEffect(()=>{
             {/* section5 Profile Info */}
             {accountData &&
             <div className={`w-3/12 hidden ${!chatroomToggle?'h-[88vh]':'h-screen'} pb-3 bg-[#383739] border-l border-gray-500 text-white lg:block`}>
-                  <div onClick={()=>{setShowProfileImage(true);}} className='flex-1 flex bg-stone-900 h-44 px-2 pt-28 items-center gap-1'>
-                    <img src={accountData.accountImage?accountData.accountImage.secure_url:'/defaultProfile.png'} className='cursor-pointer h-20 w-20 rounded-full'/>
+                  <div  className='flex-1 flex bg-stone-900 h-44 px-2 pt-28 items-center gap-1'>
+                    <img src={accountData.accountImage?accountData.accountImage.secure_url:'/defaultProfile.png'} onClick={()=>{setShowProfileImage(true);}}  className='cursor-pointer h-20 w-20 rounded-full hover:border-2 hover:border-purple-700 active:border-purple-700'/>
                   <div className='pt-2 flex flex-col'>
-                     <div className='text-[0.9rem] lg:break-words lg:w-20 xl:break-normal xl:w-auto'>{accountData.firstname} {accountData.lastname}</div>
-                     <div className='text-[0.8rem]'>{accountData.username}</div>
+                     <div className='text-[0.9rem] lg:break-all lg:w-20 xl:break-normal xl:w-auto'>{accountData.firstname} {accountData.lastname}</div>
+                     <div className='text-[0.8rem] lg:break-all lg:w-20 xl:break-normal xl:w-auto'>{accountData.username}</div>
                   </div>
                   </div>
               <div className='flex flex-col justify-center flex-1 gap-1 py-4 px-2 mt-4 text-[0.9rem]'>
@@ -783,12 +783,16 @@ useEffect(()=>{
          {/* image show card from Profile Image */}
          {showProfileImage  && accountData &&
                 <div className="overlay flex flex-col">
-                    <div className="image-card w-auto h-auto p-3 md:w-auto bg-[rgba(0,0,0,0.7)] rounded-xl">
+                    <div className="image-card w-auto h-auto p-3 md:w-auto bg-[rgba(0,0,0,0.7)] rounded-xl border-2 border-purple-700">
                     <div className="w-full h-8 text-white z-10">
-                    <FontAwesomeIcon onClick={()=>{setShowProfileImage(false);}} icon={faClose} className="h-7 w-7 hover:text-gray-400 cursor-pointer"/>
+                    <FontAwesomeIcon onClick={()=>{setShowProfileImage(false);}} icon={faClose} className="h-7 w-7 hover:text-purple-500 cursor-pointer"/>
                     </div>
-                    <div className="p-3">
-                    <img className="h-56 w-56 rounded-md" src={accountData.accountImage.secure_url} alt="Post picture"/>
+                    <div className="p-3 flex items-center flex-col">
+                    <img className="max-h-[90vh] md:max-h-[60vh] md:max-w-[70vw] md:w-auto w-full" src={accountData.accountImage.secure_url} alt="Post picture"/>
+                    <div>
+                    <div className='text-white text-[1rem]'>Name: {accountData.firstname} {accountData.lastname}</div>
+                    <div className='text-white text-[0.9rem]'>Username : {accountData.username}</div>
+                    </div>
                     </div>
                     </div>
                 </div>

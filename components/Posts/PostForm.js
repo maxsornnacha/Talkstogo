@@ -97,6 +97,7 @@ export default function Postform(props){
 
     const handleSubmitForm=async (event)=>{
         event.preventDefault()
+        const account_id = props.accountData._id
         const id = props.accountData.id
         const firstname = props.accountData.firstname
         const lastname = props.accountData.lastname
@@ -149,6 +150,7 @@ export default function Postform(props){
                             currentDate,
                             currentTime,
                             image,
+                            account_id,
                             id,
                             video:data
                         },{
@@ -191,6 +193,7 @@ export default function Postform(props){
                         currentDate,
                         currentTime,
                         image,
+                        account_id,
                         id,
                         video:videoInput
                     },{
@@ -252,7 +255,7 @@ export default function Postform(props){
         
             <div className="py-3 flex items-center gap-2  w-full">
                 <Link href={`/profile/${props.accountData.id}`}>
-                <img src={props.accountData.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
+                <img src={props.accountData.accountImage.secure_url} className="w-8 h-8 rounded-full hover:border hover:border-purple-700 active:border-purple-700"/>
                 </Link>
                 <Link href={`/profile/${props.accountData.id}`} className="text-violet-400 hover:text-white active:text-white text-[0.8rem]">
                     {props.accountData.firstname} {props.accountData.lastname}
@@ -265,7 +268,7 @@ export default function Postform(props){
             {image &&
             <div  className="bg-stone-400 p-2 border-r border-l border-violet-600  w-full flex flex-col items-center">
             <FontAwesomeIcon onClick={()=>{setImage(null);}} icon={faClose} className="cursor-pointer self-start bg-violet-600 hover:bg-violet-700 p-1 rounded-full w-4 h-4"/>
-            <img onClick={()=>{setImageToggle(true);}} className="cursor-pointer w-72 h-72" src={image}  alt="uploaded image"/>
+            <img onClick={()=>{setImageToggle(true);}} className="cursor-pointer w-72 h-72 hover:border-2 hover:border-purple-700 active:border-purple-700" src={image}  alt="uploaded image"/>
             </div>
             }
             {videoInput && videoInputDisplay &&
@@ -306,12 +309,12 @@ export default function Postform(props){
 
             {imageToggle &&
              <div className="overlay flex flex-col">
-             <div className="image-card-post-form p-3 md:w-auto bg-[rgba(0,0,0,0.7)] rounded-xl">
+             <div className="image-card-post-form p-3 md:w-auto bg-[rgba(0,0,0,0.7)] rounded-xl border-2 border-purple-700">
              <div className="w-full h-8 text-white z-10">
              <FontAwesomeIcon onClick={()=>{setImageToggle(false);}} icon={faClose} className="h-7 w-7 hover:text-gray-400 cursor-pointer"/>
              </div>
-             <div className="p-3">
-             <img className="h-full w-full" src={image} alt="Post picture"/>
+             <div className="p-3 flex justify-center">
+             <img className="max-h-[90vh] md:max-h-[60vh] md:max-w-[70vw] md:w-auto w-full" src={image} alt="Post picture"/>
              </div>
              </div>
              </div>     

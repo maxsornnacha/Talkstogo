@@ -91,16 +91,17 @@ export default function Rooms({userData , CurrentTalkingRoomLoading}){
     {talkingrooms &&
     talkingrooms.slice(0,10).map((room,index)=>{
     return (
-            <div className="w-full flex flex-col items-start" key={index}>
+            <div className="w-full flex flex-col items-start " key={index}>
                     <Link className="flex px-2  items-center gap-2  w-full py-1  hover:bg-gray-700 rounded-md hover:text-white" href={`/rooms/talking-room/${room.slug}`}>
+                        
                         {room.roomIcon ?
                         <img className=" h-8 w-8 rounded-full" src={room.roomIcon.secure_url} alt="Room picture"/>
                         :
                         <div className="bg-[#383739] text-[#383739] h-8 w-8 rounded-full">...</div>
                         }
-                        <div>
-                        <p className="text-[0.75rem] font-normal">{room.roomName.length >15?room.roomName.slice(0,15)+'...':room.roomName}</p>
-                        <p className="text-[0.6rem] font-normal">{room.roomDescription!==''?(room.roomDescription.length >20?room.roomDescription.slice(0,20)+'...':room.roomDescription):'No description'}</p>
+                        <div className="flex-1 break-all">
+                        <p className="text-[0.75rem] font-normal">{room.roomName}</p>
+                        <p className="text-[0.6rem] font-normal">{room.roomDescription!==''?(room.roomDescription):'No description'}</p>
                         </div>
                     </Link>
         

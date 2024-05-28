@@ -20,13 +20,14 @@ export default function MemberCard({handleCloseMemberCard , admins , participant
             {creator && 
           creator.map((creator,index)=>{
           return (
-          <div key={index} className="flex items-center my-3 relative">
+          <div key={index} className="flex items-center pb-3 relative">
               <Link href={`/profile/${creator.id}`} className={`me-2 ms-2`}>
               <div><img src={creator.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
-              <FontAwesomeIcon icon={faCircle} className={`absolute left-7 bottom-0 border-2 rounded-full border-stone-800 ${creatorStatus[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2`}/> 
+              <FontAwesomeIcon icon={faCircle} className={`absolute left-[27px] bottom-3 border-2 rounded-full border-stone-800 ${creatorStatus[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2`}/> 
+              {creatorStatus[index] === 'online' && <div className="animate-ping bg-green-400 w-2 h-2 rounded-full absolute left-[29px] top-[17px]"></div>}
               <Link href={`/profile/${creator.id}`}>
-              <div className="text-[0.75rem] hover:text-gray-200">{creator.firstname} {creator.lastname}</div>
+              <div className="text-[0.75rem] hover:text-purple-500">{creator.firstname} {creator.lastname}</div>
               </Link>
           </div>
           )
@@ -47,13 +48,14 @@ export default function MemberCard({handleCloseMemberCard , admins , participant
             {admins && 
           admins.map((admin,index)=>{
           return (
-          <div key={index} className="flex items-center my-3 relative">
+          <div key={index} className="flex items-center pb-3 relative ">
               <Link href={`/profile/${admin.id}`} className={`me-2 ms-2`}>
               <div><img src={admin.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
-              <FontAwesomeIcon icon={faCircle} className={`absolute left-7 bottom-0 border-2 rounded-full border-stone-800 ${adminStatuses[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2`}/> 
+              <FontAwesomeIcon icon={faCircle} className={`absolute left-[27px] bottom-3 border-2 rounded-full border-stone-800 ${adminStatuses[index] === 'online'?'text-green-400':'text-red-500'} w-2 h-2`}/> 
+              {adminStatuses[index] === 'online' && <div className="animate-ping bg-green-400 w-2 h-2 rounded-full absolute left-[29px] top-[17px]"></div>}
               <Link href={`/profile/${admin.id}`}>
-              <div className="text-[0.75rem] hover:text-gray-200">{admin.firstname} {admin.lastname}</div>
+              <div className="text-[0.75rem] hover:text-purple-500">{admin.firstname} {admin.lastname}</div>
               </Link>
           </div>
           )
@@ -73,13 +75,14 @@ export default function MemberCard({handleCloseMemberCard , admins , participant
             {participants && participants.length !== 0 &&
           participants.map((participant,index)=>{
           return (
-          <div key={index} className="flex items-center my-3 relative">
+          <div key={index} className="flex items-center pb-3 relative">
               <Link href={`/profile/${participant.id}`} className={`me-2 ms-2`}>
               <div><img src={participant.accountImage.secure_url} className="w-7 h-7 rounded-full"/></div>
               </Link>
-              <FontAwesomeIcon icon={faCircle} className={`absolute left-7 bottom-0 border-2 rounded-full border-stone-800 ${participantStatuses[index] === 'online' ?'text-green-400':'text-red-500'}  w-2 h-2`}/> 
+              <FontAwesomeIcon icon={faCircle} className={`absolute left-[27px] bottom-3 border-2 rounded-full border-stone-800 ${participantStatuses[index] === 'online' ?'text-green-400':'text-red-500'}  w-2 h-2`}/> 
+              {participantStatuses[index] === 'online' && <div className="animate-ping bg-green-400 w-2 h-2 rounded-full absolute left-[29px] top-[17px]"></div>}
               <Link href={`/profile/${participant.id}`}>
-              <div className="text-[0.75rem] hover:text-gray-200">{participant.firstname} {participant.lastname}</div>
+              <div className="text-[0.75rem] hover:text-purple-500">{participant.firstname} {participant.lastname}</div>
               </Link>
           </div>
           )

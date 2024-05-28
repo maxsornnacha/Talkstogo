@@ -165,7 +165,7 @@ export default function FriendInvite({userData , handleCloseInviteCard , roomYou
           <div className="flex items-center w-full p-2">
                  {/* ต้องแก้เมื่ออัพ ลงเว็บไซด์ */}
                  <div className="flex flex-col justify-center items-center">
-                 <FontAwesomeIcon icon={faLink} onClick={handleCopyLink} className="w-4 h-4 p-3 bg-stone-900 cursor-pointer  hover:bg-purple-500 text-white rounded-full">คัดลอกลิงค์</FontAwesomeIcon>
+                 <FontAwesomeIcon icon={faLink} onClick={handleCopyLink} className="w-4 h-4 p-3 bg-stone-900 cursor-pointer  hover:bg-purple-600 text-white rounded-full">คัดลอกลิงค์</FontAwesomeIcon>
                  <button className="text-[0.75rem] hover:text-purple-500" onClick={handleCopyLink}>Copy the link</button>
                  </div>
           </div>
@@ -182,9 +182,9 @@ export default function FriendInvite({userData , handleCloseInviteCard , roomYou
                     {friendData.map((friend,index)=>{
                       return (
                       <div className="flex items-center justify-between" key={index}>
-                        <Link href={`/profile/${friend.id}`} className="flex items-center gap-1 text-[0.75rem]">
-                          <img src={friend.accountImage.secure_url} className="w-8 h-8 rounded-full"/>
-                          <div className="hover:text-purple-600">{friend.firstname} {friend.lastname}</div>
+                        <Link href={`/profile/${friend.id}`} className="flex items-center gap-2 text-[0.75rem]">
+                          <img src={friend.accountImage.secure_url} className="w-8 h-8 rounded-full hover:border hover:border-purple-700 active:border-purple-700"/>
+                          <div className="hover:text-purple-500">{friend.firstname} {friend.lastname}</div>
                         </Link>
 
                         <div>

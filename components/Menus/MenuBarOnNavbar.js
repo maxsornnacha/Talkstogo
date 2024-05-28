@@ -21,10 +21,10 @@ export default function MenuBarOnNavbar(props){
 
     return(
     <>
-  <div className="flex flex-col items-start text-white bg-[#161617]  font-semibold">
+  <div className={`${props.menuToggle?'h-screen':'h-0'} duration-300 flex flex-col items-start text-white bg-[#161617]  font-semibold`}>
 
         <div className="p-2 pt-4">
-            <FontAwesomeIcon icon={faChevronUp} className="hover:text-violet-500 w-5 h-5 cursor-pointer" onClick={()=>{props.handleCloseMenuToggle();}}/>
+            <FontAwesomeIcon icon={faChevronUp} className="hover:text-purple-500 active:text-purple-500 w-5 h-5 cursor-pointer" onClick={()=>{props.handleCloseMenuToggle();}}/>
         </div>
         
         <div className="flex w-full p-2 hover:bg-gray-700 hover:text-white hover:rounded-md">
@@ -39,7 +39,7 @@ export default function MenuBarOnNavbar(props){
         </div>
 
         <div className="flex py-2 w-full  hover:bg-gray-700 hover:text-white font-normal hover:rounded-md">
-        <Link href={`/main`}  className="text-[0.8rem] flex w-full items-center gap-1 ps-3 ">
+        <Link href={`/`}  className="text-[0.8rem] flex w-full items-center gap-1 ps-3 ">
         <FontAwesomeIcon icon={faHouse} className="w-5 h-5 text-white"/>
         <button  className=" text-[0.8rem] w-full text-start">
             Home

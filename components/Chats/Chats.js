@@ -358,26 +358,28 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
     }
 
 
+    const [showImage ,setShowImage] = useState(null)
     
     return(      
+        <>
         <div 
-        className={`chat-card p-0 m-0 bg-[#050111] text-white`}
+        className={`chat-card p-0 m-0 bg-stone-900  text-white`}
         style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
         >
 
             <div id="movableCard"
-             className={`w-full flex justify-end h-[45px] rounded-xl bg-[#050111]  ${isDragging?'cursor-grabbing':'cursor-grab'}`}
+             className={`w-full flex justify-end h-[45px] rounded-xl bg-stone-900  ${isDragging?'cursor-grabbing':'cursor-grab'}`}
              onMouseDown={handleMouseDown}
              >
                   <div className="py-2 flex w-full gap-1 items-center ps-3  ">
                 <Link href={`/profile/${getter.id}`}>
-                 <img src={getter.accountImage.secure_url} className="w-7 h-7 rounded-full"/>
+                 <img src={getter.accountImage.secure_url} className="w-7 h-7 rounded-full hover:border hover:border-purple-700 active:border-purple-700"/>
                 </Link>
                 <div className="flex flex-col">
-                    <Link href={`/profile/${getter.id}`} className="hover:text-purple-300 text-[0.75rem]">
+                    <Link href={`/profile/${getter.id}`} className="hover:text-purple-500 text-[0.75rem] font-normal">
                         {getter.firstname} {getter.lastname}
                     </Link>
-                    <Link href={`/profile/${getter.id}`} className="hover:text-purple-300 text-[0.65rem]">
+                    <Link href={`/profile/${getter.id}`} className="hover:text-purple-500 text-[0.65rem] font-normal">
                         Username: {getter.username}
                     </Link>
                 </div>
@@ -394,18 +396,18 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
             {msgData && !allMessagesLoading &&
             <div  className="bg-stone-900  w-full">
             <div className="flex flex-col px-1 w-full">
-            {msgData.map((data)=>{
+            {msgData.map((data , index)=>{
                 return (
                 data.senderID !== senderData.accountData._id ?
                 // the other person
                 <div className="flex gap-2 mt-2" key={data._id}>
                 <div className ='bg-stone-900 text-white flex items-end'>
                     <Link href={`/profile/${getter.id}`}>
-                    <img src={getter.accountImage.secure_url} className="rounded-full inline w-6 h-6 "  alt="profile's picture"/>
+                    <img src={getter.accountImage.secure_url} className="rounded-full inline w-6 h-6 hover:border hover:border-purple-700 active:border-purple-700"  alt="profile's picture"/>
                     </Link>
                 </div>
                 <div onDoubleClick={()=>handleDoubleClickCopy(data.content)} className="max-w-56 w-auto px-2 bg-gray-700  text-white text-[0.75rem] font-normal pt-4 break-words rounded-md">
-                {data.image ?<Link href={data.image.secure_url} target="blank"><img src={data.image.secure_url} className={`h-32 w-32 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></Link>:''}
+                {data.image ?<div onClick={()=>{setShowImage({status:true , imageNO:index+1});}} className="cursor-pointer"><img src={data.image.secure_url} className={`h-32 w-32 hover:border-2 hover:border-purple-700 active:border-purple-700 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></div>:''}
                         {isURL(data.content)?<a className="text-green-500 hover:text-white text-[0.75rem]" target="_blank"  href={data.content}>{data.content}</a>:data.content}
                 <div className="text-white text-end pt-3 text-[0.65rem]"> {convertTime(data.timestamp)}</div>
                 </div>
@@ -413,7 +415,7 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
                 : //Me
                 <div className="flex justify-end col-span-10 bg-stone-900 mt-2" key={data._id}>
                 <div onDoubleClick={()=>handleDoubleClickCopy(data.content)} className="max-w-56 w-auto px-5 bg-purple-600 text-white text-[0.75rem] font-normal pt-4 break-words rounded-md">
-                        {data.image ?<Link href={data.image.secure_url} target="blank"><img src={data.image.secure_url} className={`h-32 w-32 ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></Link>:''}
+                        {data.image ?<div onClick={()=>{setShowImage({status:true , imageNO:index+1});}} className="cursor-pointer"><img src={data.image.secure_url} className={`h-32 w-32 hover:border-2 hover:border-white active:border-white ${data.content.includes(process.env.CLIENT_URL)?'rounded-full':'rounded-xl'}`}/></div>:''}
                         {isURL(data.content)?<a className="text-green-400 hover:text-white text-[0.75rem]" target="_blank"  href={data.content}>{data.content}</a>:data.content}
                     <div className="text-white text-end pt-3 text-[0.65rem]">{data.isRead && <FontAwesomeIcon icon={faCheck} className="text-green-300 h-3 w-3"/>} {convertTime(data.timestamp)}</div>
                 </div>
@@ -452,14 +454,14 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
             </div>
             }
     
-            <div className="h-[45px] flex justify-start items-center pt-3 w-full px-1 bg-[#050111]">
+            <div className="h-[45px] flex justify-start items-center pt-3 w-full px-1 bg-stone-900">
             <input value={inputMsg} onChange={(event)=>setInputMsg(event.target.value)} type="text" className="w-5/6 py-2 text-white bg-stone-800 border border-gray-600 focus:border-purple-700 mx-1 ps-2 text-[0.75rem] outline-none  rounded" placeholder="message"/> 
             {!sendingMsgLoading &&
             <span>
             <label htmlFor="photoChat" >
                 <FontAwesomeIcon icon={faPlus} className="h-3 w-3 p-3 mt-1 cursor-pointer bg-gray-700 text-white hover:bg-gray-600 hover:text-white rounded-md" alt="Image Input"/>
             </label>
-            <input onChange={handleFileUpload} type="file" name="photoChat" id='photoChat' hidden={true}/>
+            <input accept="image/*" onChange={handleFileUpload} type="file" name="photoChat" id='photoChat' hidden={true}/>
             </span>
             }
             {sendingMsgLoading ?
@@ -473,7 +475,31 @@ export default function Chatroom({senderData,getterData,handleCloseChat,userData
             <button disabled className="bg-purple-900 flex-1 h-9 mx-1 rounded-md"></button>
             }
             </div>
-  
+
+        
         </div>
+        {msgData && 
+            msgData.map((data, index)=>{
+            return (
+            <div key={data._id}>
+             {/* image show card from Comment Image */}
+             {showImage && showImage.status && showImage.imageNO === index+1 &&
+                                    <div className="overlay flex flex-col">
+                                    <div className="image-card w-auto h-auto p-3 md:w-auto bg-[rgba(0,0,0,0.7)] rounded-xl border-2 border-purple-700">
+                                    <div className="w-full h-8 text-white z-10">
+                                        <FontAwesomeIcon onClick={()=>{setShowImage(null);}} icon={faClose} className="h-7 w-7 hover:text-violet-500 cursor-pointer"/>
+                                    </div>
+                                    <div className="p-3 flex justify-center">
+                                        <img className="max-h-[90vh] md:max-h-[60vh] md:max-w-[70vw] md:w-auto w-full" src={data.image.secure_url} alt="Post picture"/>
+                                    </div>
+                                    </div>
+                                    </div>
+            }
+            </div>
+            )
+            })
+
+        }
+        </>
     )
 }

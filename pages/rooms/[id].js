@@ -254,14 +254,14 @@ export default function Rooms(){
                     {/* Room icon and name */}
                     <div className="flex-1 flex items-center gap-1 p-2 break-all">
                     {room.roomIcon ?
-                    <Link href={`/rooms/talking-room/${room.slug}`}>
-                    <img src={room.roomIcon.secure_url} className="h-12 w-12 rounded-full"/>
+                    <Link href={`/rooms/talking-room/${room.slug}`} className="w-12">
+                    <img src={room.roomIcon.secure_url} className="h-12 w-12 rounded-full hover:border-2 hover:border-purple-700 active:border-purple-700"/>
                     </Link>
                     :
-                    <Link href={`/rooms/talking-room/${room.slug}`} className="bg-[#383739] rounded-full h-12 w-12">&nbsp;&nbsp;&nbsp;</Link>
+                    <Link href={`/rooms/talking-room/${room.slug}`} className="w-12"><div className="bg-[#383739] rounded-full h-12 w-12 hover:border-2 hover:border-purple-700 active:border-purple-700">&nbsp;&nbsp;&nbsp;</div></Link>
                     }
-                    <Link href={`/rooms/talking-room/${room.slug}`} className="text-[0.8rem] text-start hover:text-purple-400">
-                        {room.roomName.length > 15 ? room.roomName.slice(0,15)+'...':room.roomName}
+                    <Link href={`/rooms/talking-room/${room.slug}`} className="text-[0.8rem] text-start hover:text-purple-500 flex-1">
+                        {room.roomName}
                     </Link>
                     </div>
                     </div>
@@ -304,15 +304,15 @@ export default function Rooms(){
                     {/* Room icon and name */}
                     <div className="flex-1 flex items-center gap-1 p-2 break-all">
                     {room.roomIcon ?
-                    <Link  href={`/rooms/talking-room/${room.slug}`}>
-                    <img src={room.roomIcon} className="h-12 w-12 rounded-full"/>
-                    </Link>
-                    :
-                    <Link href={`/rooms/talking-room/${room.slug}`} className="bg-[#383739] rounded-full h-12 w-12">&nbsp;&nbsp;&nbsp;</Link>
-                    }
-                    <Link href={`/rooms/talking-room/${room.slug}`} className="text-[0.8rem]  text-start hover:text-purple-400">
-                        {room.roomName.length > 15 ? room.roomName.slice(0,15)+'...':room.roomName}
-                    </Link>
+                     <Link href={`/rooms/talking-room/${room.slug}`} className="w-12">
+                     <img src={room.roomIcon.secure_url} className="h-12 w-12 rounded-full hover:border-2 hover:border-purple-700 active:border-purple-700"/>
+                     </Link>
+                     :
+                     <Link href={`/rooms/talking-room/${room.slug}`} className="w-12"><div className="bg-[#383739] rounded-full h-12 w-12 hover:border-2 hover:border-purple-700 active:border-purple-700">&nbsp;&nbsp;&nbsp;</div></Link>
+                     }
+                     <Link href={`/rooms/talking-room/${room.slug}`} className="text-[0.8rem] text-start hover:text-purple-500 flex-1">
+                         {room.roomName}
+                     </Link>
                     </div>
                     </div>
 
@@ -354,13 +354,15 @@ export default function Rooms(){
                 <div className=" flex justify-between w-full ">
                         {/* room icon and name */}
                         <div className="flex-1 flex items-center gap-2">
-                        <img src={room.roomIcon?room.roomIcon.secure_url:'/black-background.jpg'} className="h-10 w-10 rounded-full"/>
-                        <div className="flex flex-col">
-                        <div className="text-[0.75rem] break-words">
-                           {room.roomName.length > 15 ? room.roomName.slice(0,15)+'...':room.roomName}
-                        </div>
+                        <Link  href={`/rooms/talking-room/${room.slug}`}>
+                        <img src={room.roomIcon?room.roomIcon.secure_url:'/black-background.jpg'} className="h-10 w-10 rounded-full hover:border hover:border-purple-700 active:border-purple-700"/>
+                        </Link>
+                        <div className="flex flex-col w-[35vw]">
+                        <Link  href={`/rooms/talking-room/${room.slug}`} className="text-[0.75rem] break-words hover:text-purple-500 active:text-purple-500">
+                           {room.roomName}
+                        </Link>
                         <div className="text-[0.7rem] break-all text-gray-300">
-                           Description: {room.roomDescription.length === 0 ? 'No description':(room.roomDescription.length > 17 ? room.roomDescription.slice(0,17)+'...':room.roomDescription)}
+                           Description: {room.roomDescription.length === 0 ? 'No description':room.roomDescription}
                         </div>
                         </div>
 
@@ -395,13 +397,15 @@ export default function Rooms(){
                     <div className=" flex justify-between w-full ">
                             {/* room icon and name */}
                             <div className="flex-1 flex items-center gap-2">
-                            <img src={room.roomIcon?room.roomIcon.secure_url:'/black-background.jpg'} className="h-10 w-10 rounded-full"/>
-                            <div className="flex flex-col">
-                            <div className="text-[0.75rem] break-words">
-                               {room.roomName.length > 15 ? room.roomName.slice(0,15)+'...':room.roomName}
-                            </div>
+                            <Link  href={`/rooms/talking-room/${room.slug}`}>
+                            <img src={room.roomIcon?room.roomIcon.secure_url:'/black-background.jpg'} className="h-10 w-10 rounded-full hover:border hover:border-purple-700 active:border-purple-700"/>
+                            </Link>
+                            <div className="flex flex-col w-[35vw]">
+                            <Link  href={`/rooms/talking-room/${room.slug}`} className="text-[0.75rem] break-words hover:text-purple-500 active:text-purple-500">
+                               {room.roomName}
+                            </Link>
                             <div className="text-[0.7rem] break-all text-gray-300">
-                               Description: {room.roomDescription.length === 0 ? 'No description':(room.roomDescription.length > 17 ? room.roomDescription.slice(0,17)+'...':room.roomDescription)}
+                               Description: {room.roomDescription.length === 0 ? 'No description':room.roomDescription}
                             </div>
                             </div>
     

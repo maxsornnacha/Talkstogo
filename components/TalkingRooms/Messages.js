@@ -258,7 +258,7 @@ export default function Messages({chatroom , userData , updateToBottom}){
                     setFileInput(null)
                     setFileInputToggle(false)
                     Swal.fire({
-                        text:'Video uploaded successfully',
+                        text:'File uploaded successfully',
                         showConfirmButton: false,
                         timer: 1500,
                         position:"top"
