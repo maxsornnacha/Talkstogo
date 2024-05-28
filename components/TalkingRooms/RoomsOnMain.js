@@ -8,10 +8,12 @@ import { io } from "socket.io-client"
 const socket = io(process.env.API_SOCKET_URL)
 import { Tooltip } from "react-tooltip"
 import 'react-tooltip/dist/react-tooltip.css'
+import { useRouter } from "next/router"
 
 export default function RoomsOnMain({userData,roomYouAreIn,RoomsOnMainLoadingStatus}){
     const [creatingRoomToggle,setCreatingRoomToggle] = useState(false)
     const [talkingrooms,setTalkingrooms] = useState([])
+    const router = useRouter();
 
     useEffect(()=>{
 
@@ -183,7 +185,7 @@ export default function RoomsOnMain({userData,roomYouAreIn,RoomsOnMainLoadingSta
              <div className="flex relative">
                 <div id={`dec-${index}`} className={`bg-white my-1 text-[3px] rounded-full absolute left-[-28px] rotate-45 w-8 duration-500  ${roomYouAreIn && room._id === roomYouAreIn._id?'h-8 bottom-2':'h-3 bottom-5'}`}>&nbsp;</div>
                 {room.roomIcon ?
-                 <Link id={`roomname-${index}`} passHref={true} className={`flex px-2 items-center gap-2 rounded-full pt-2`} href={`/rooms/talking-room/${room.slug}`}>
+                 <Link id={`roomname-${index}`} className={`flex px-2 items-center gap-2 rounded-full pt-2`} href={`/rooms/talking-room/${room.slug}`}>
                     <img
                     className={`hover:rounded-xl h-12 w-12 hover:bg-gray-500 shadow-md duration-100 ${roomYouAreIn && room._id === roomYouAreIn._id?'rounded-xl':'rounded-full'}`}
                     src={room.roomIcon.secure_url}
@@ -193,7 +195,7 @@ export default function RoomsOnMain({userData,roomYouAreIn,RoomsOnMainLoadingSta
                     />
                  </Link>
                  :
-                 <Link id={`roomname-${index}`} passHref={true} className={`flex px-2 items-center gap-2 pt-2 rounded-full`} href={`/rooms/talking-room/${room.slug}`}
+                 <Link id={`roomname-${index}`} className={`flex px-2 items-center gap-2 pt-2 rounded-full`} href={`/rooms/talking-room/${room.slug}`}
                  onMouseEnter={()=>handleMouseEnter(`dec-${index}`,room._id)}
                  onMouseLeave={()=>handleMouseLeave(`dec-${index}`,room._id)}
                  >

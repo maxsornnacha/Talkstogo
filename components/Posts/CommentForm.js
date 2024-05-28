@@ -230,7 +230,7 @@ export default function CommentForm(props){
             </div>
 
             {/* Section3 Comment and Reply */}
-            <div className={`md:w-5/12 px-3 bg-stone-900 py-3 ${commentMobileToggle?'h-[300vh] ':'h-[80px]'} md:h-full duration-500  ${commentMobileToggle && 'overflow-auto'}`}> 
+            <div className={`md:w-5/12 px-3 bg-stone-900 py-3 ${commentMobileToggle?'h-[300vh] ':'h-[80px]'} md:h-full duration-200  ${commentMobileToggle && 'overflow-auto'}`}> 
                 {/* Comment Topic */}
                 <div className="cursor-pointer md:hidden"><FontAwesomeIcon className="hover:text-purple-500" icon={commentMobileToggle?faChevronDown:faChevronUp} onClick={()=>{setCommentMobileToggle(commentMobileToggle?false:true);}}/></div>
                 <div className="text-[0.85rem] font-normal">Comments</div>

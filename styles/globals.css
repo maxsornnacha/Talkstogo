@@ -100,8 +100,8 @@
   left:50%;
   transform: translate(-50%,-50%);
   z-index: 9999;
-  width: 100vw !important;
-  height: 100vh !important;
+  width: 100dvw !important;
+  height: 100dvh !important;
 }
 .image-card-post-form{
   position: fixed;
