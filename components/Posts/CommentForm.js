@@ -270,9 +270,11 @@ export default function CommentForm(props){
                     <div className="flex flex-col" key={index}>
                  
                         <div className="flex gap-1">
+                            <div>
                             <Link href={`/profile/${commentItem.accountID}`}>
                              <img src={commentItem.accountImage.secure_url} className="h-7 w-7 rounded-full hover:border hover:border-purple-700 active:border-purple-700"/>
                              </Link>
+                             </div>
                         <div className="w-10/12 flex flex-col">
                             <div className="bg-purple-800 rounded-md break-words px-1 pb-2">
                             <Link href={`/profile/${commentItem.accountID}`} className="text-white hover:text-gray-300 text-[0.7rem] font-normal">{commentItem.firstname} {commentItem.lastname}</Link>
@@ -319,7 +321,7 @@ export default function CommentForm(props){
                         </div>
                   
                             {/* Reply displaying */}
-                            <div className="flex flex-col mx-8 border-l-2 border-white">
+                            <div className="flex flex-col ms-8 me-1 border-l-2 border-white">
                             {replyToggleForDisplay === index && commentItem.replies &&
                             commentItem.replies.map((item,index)=>{
                                 return(
@@ -327,9 +329,11 @@ export default function CommentForm(props){
                                     <div className="border-t-2 mt-4 border-white">
                                         &nbsp;&nbsp;&nbsp;&nbsp;
                                     </div>
+                                    <div>
                                     <Link href={`/profile/${item.accountID}`}>
                                         <img src={item.accountImage.secure_url} className="w-7 h-7 rounded-full hover:border hover:border-purple-700 active:border-purple-700"/>
                                     </Link>
+                                    </div>
 
                                     <div className="flex flex-col gap-1 ms-1">
                                     <div className="bg-purple-700 text-gray-100 rounded-md p-1 pb-2 flex flex-col gap-1 w-auto max-w-56 break-words">
