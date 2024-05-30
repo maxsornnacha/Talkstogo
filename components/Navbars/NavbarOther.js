@@ -305,50 +305,60 @@ export default function Navbar(props){
         {newTalkingRoomAmount > 0 &&
         <div className="bg-red-500 text-center w-4 h-4 text-[0.7rem] font-normal rounded-full absolute right-[167px] md:right-[168px] lg:right-[168px] top-[0px] ">{newTalkingRoomAmount}</div>
         }
+        {!TalkingRoomToggle &&
         <Tooltip 
         anchorSelect={`#talkingroom-requests`} place='bottom-end' className="hidden md:block" style={{fontSize:'0.7rem' , position:'fixed' , backgroundColor:'black', zIndex:'1000'}}
         >
         Talkingrom requests
         </Tooltip>
+        }
      
         <div><FontAwesomeIcon id="friend-requests" icon={faUserPlus} onClick={()=>{setMenuToggle(false); setFriendRequestToggle(friendRequestToggle?false:true); setTalkingRoomToggle(false); setSearchToggle(false); setMessengerToggle(false); setProfileToggle(false)}}  alt="search" className={friendRequestToggle?"outline-none h-4 w-4 p-2 cursor-pointer bg-purple-700 border-2 border-purple-700 rounded-full text-white":"outline-none h-4 w-4 p-2 cursor-pointer bg-white border-2  rounded-full text-purple-700 hover:bg-purple-700 hover:border-purple-700 hover:text-white"}/></div>
         {friendRequestAmount > 0 &&
         <div className="bg-red-500 text-center w-4 h-4 text-[0.7rem] rounded-full absolute right-[128px] md:right-[128px] lg:right-[128px] top-[0px] ">{friendRequestAmount}</div>
         }
+        {!friendRequestToggle &&
          <Tooltip 
         anchorSelect={`#friend-requests`} place='bottom-end' className="hidden md:block"  style={{fontSize:'0.7rem' , position:'fixed' , backgroundColor:'black', zIndex:'1000'}}
         >
         Friend requests
         </Tooltip>
+        }
         
 
         <div><FontAwesomeIcon id="messenger" icon={faComments} onClick={()=>{setMenuToggle(false); setMessengerToggle(messengerToggle?false:true); setTalkingRoomToggle(false); setSearchToggle(false); setProfileToggle(false); setFriendRequestToggle(false); setChatroomToggle(false)}}   alt="messenger" className={messengerToggle?"outline-none h-4 w-4 p-2 cursor-pointer  border-2 border-purple-700 rounded-full text-white bg-purple-700":"outline-none h-4 w-4 p-2 cursor-pointer  bg-white border-2 rounded-full text-purple-700 hover:bg-purple-700 hover:border-purple-700 hover:text-white"} /></div>
         {newMessagesAmount > 0 &&
         <div className="bg-red-500 text-center w-4 h-4 text-[0.7rem] rounded-full absolute right-[88px] md:right-[88px] lg:right-[88px] top-[0px] ">{newMessagesAmount}</div>
         }
+        {!messengerToggle &&
         <Tooltip 
         anchorSelect={`#messenger`} place='bottom-end' className="hidden md:block"  style={{fontSize:'0.7rem' , position:'fixed' , backgroundColor:'black', zIndex:'1000'}}
         >
         Messenger
         </Tooltip>
+        }
 
         <div><FontAwesomeIcon id="search" icon={faMagnifyingGlass} onClick={()=>{setMenuToggle(false); setSearchToggle(searchToggle?false:true); setTalkingRoomToggle(false); setMessengerToggle(false); setProfileToggle(false); setFriendRequestToggle(false)}} alt="search" className={searchToggle?"outline-none h-4 w-4 p-2  cursor-pointer bg-purple-700  border-2 border-purple-700 rounded-full text-white ":"outline-none h-4 w-4 p-2  cursor-pointer bg-white border-2  rounded-full text-purple-700 hover:bg-purple-700 hover:border-purple-700 hover:text-white"}/></div>
+        {!searchToggle &&
         <Tooltip 
         anchorSelect={`#search`} place='bottom-start' className="hidden md:block"  style={{fontSize:'0.7rem' , position:'fixed' , backgroundColor:'black', zIndex:'1000'}}
         >
         Account search
         </Tooltip>
+        }
 
         {props.userData &&
         <div className="flex gap-1 items-center cursor-pointer ">
             <img id="profile" onClick={()=>{setMenuToggle(false); setProfileToggle(profileToggle?false:true); setMessengerToggle(false); setTalkingRoomToggle(false); setSearchToggle(false); setFriendRequestToggle(false)}} className={`outline-none rounded-full h-9 w-9 cursor-pointer active:border-2 active:border-purple-700`}  src={props.userData?props.userData.accountData.accountImage.secure_url:'/defaultProfile.png'} alt="Profile picture"/>
         </div> 
         }
+        {!profileToggle &&
         <Tooltip 
         anchorSelect={`#profile`} place='bottom-start' className="hidden md:block"  style={{fontSize:'0.7rem' , position:'fixed' , backgroundColor:'black', zIndex:'1000'}}
         >
         Profile
         </Tooltip>
+        }
 
         </div>
 
