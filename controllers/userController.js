@@ -6,6 +6,7 @@ const jsonWT = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid');
 const nodemailer = require('nodemailer')
 const {expressjwt: jwt} = require('express-jwt')
+const s = require('connect-redis')
 
 cloudinary.config({ 
     cloud_name:process.env.CLOUDINARY_CLOUD_NAME, 
@@ -276,7 +277,9 @@ try{
                 console.log(error)
             })
     }else{
-        image = 'https://res.cloudinary.com/dakcwd8ki/image/upload/v1716573817/default-images/u1hpxlplwpgcusumfjnj.png'
+        image = {
+            secure_url:'https://res.cloudinary.com/dakcwd8ki/image/upload/v1716573817/default-images/u1hpxlplwpgcusumfjnj.png'
+        }
     }
 
     const userData = await Members.findOne({ email: email })
