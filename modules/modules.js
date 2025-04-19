@@ -135,66 +135,38 @@ export const websitePath = async (message) => {
   return null;
 };
 
-// Define a class to manage multiple audio channels for a single sound
-class SoundPool {
-  constructor(src, poolSize = 5, volume = 0.2) {
-    this.pool = [];
-    this.index = 0;
-    for (let i = 0; i < poolSize; i++) {
-      const audio = new Audio(src);
-      audio.volume = volume;
-      this.pool.push(audio);
-    }
-  }
 
-  play() {
-    const audio = this.pool[this.index];
-    audio.currentTime = 0;
-    audio.play().catch((err) => {
-      console.error('Audio playback failed:', err);
-    });
-    this.index = (this.index + 1) % this.pool.length;
-  }
-}
+export const playSound = () => {
+  const audio = new Audio('/notification1.wav');
+  audio.volume = 0.2;
+  audio.play().catch((error) => {
+    console.warn('playSound failed:', error.message);
+  });
+};
 
-// Initialize sound pools for each notification sound
-const sound1 = new SoundPool('/notification1.wav', 5, 0.2);
-const sound2 = new SoundPool('/notification2.mp3', 5, 0.2);
-const sound3 = new SoundPool('/notification3.mp3', 5, 0.7);
-const sound4 = new SoundPool('/notification4.mp3', 5, 0.7);
+export const playSound2 = () => {
+  const audio = new Audio('/notification2.mp3');
+  audio.volume = 0.2;
+  audio.play().catch((error) => {
+    console.warn('playSound2 failed:', error.message);
+  });
+};
 
-// Export functions to play each sound
-export const playSound = () => sound1.play();
-export const playSound2 = () => sound2.play();
-export const playSound3 = () => sound3.play();
-export const playSound4 = () => sound4.play();
+export const playSound3 = () => {
+  const audio = new Audio('/notification3.mp3');
+  audio.volume = 0.2;
+  audio.play().catch((error) => {
+    console.warn('playSound3 failed:', error.message);
+  });
+};
 
-// export const playSound = ()=>{
-//   const audio = new Audio('/notification1.wav');
-//   audio.volume = 0.2;
-//   audio.play();
-// }
+export const playSound4 = () => {
+  const audio = new Audio('/notification4.mp3');
+  audio.volume = 0.2;
+  audio.play().catch((error) => {
+    console.warn('playSound4 failed:', error.message);
+  });
+};
 
-
-// //play sound exit talkingChannel
-// export const playSound2 = ()=>{
-//   const audio = new Audio('/notification2.mp3');
-//   audio.volume = 0.2;
-//   audio.play();
-// }
-
-
-// //play sound exit talkingChannel
-// export const playSound3 = ()=>{
-//   const audio = new Audio('/notification3.mp3');
-//   audio.volume = 0.7;
-//   audio.play();
-// }
-
-// export const playSound4 = ()=>{
-//   const audio = new Audio('/notification4.mp3');
-//   audio.volume = 0.7;
-//   audio.play();
-// }
 
 
