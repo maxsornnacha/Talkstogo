@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {createPost, displayPost,likeSystemIncrease, likeSystemDecrease, singlePost, createComment, createReply, displayPostForProfile , deletePost, editPost} = require('../controllers/ิpostController')
+const {createPost, displayPost,likeSystemIncrease, likeSystemDecrease, singlePost, createComment, createReply, displayPostForProfile , deletePost, editPost} = require('../controllers/postController')
 const {createAccount,loginAccount, accountData, logoutAccount, singleAccountData, getAllAccounts , verifyOTPAccount , sendOTPAccount , addProfileImage , TokenAuthenticaiton} = require('../controllers/userController')
 const { makingRequest, requestCheck, requestCheck1, removeRequest, acceptRequest, fetchFriendRequest, fetchFriendlist } = require('../controllers/friendController')
 const { createChatroom, sendMessage, getMessage, readMessage, getAllMessages,  getAllMessageAndAccounts, deleteChatmessegeRoom } = require('../controllers/chatController')
