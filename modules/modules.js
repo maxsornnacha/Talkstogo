@@ -138,32 +138,71 @@ export const websitePath = async (message) => {
 
 
 //play sound Notifications
-export const playSound = ()=>{
-  const audio = new Audio('/notification1.wav');
-  audio.volume = 0.2;
-  audio.play();
+const audio1 = new Audio('/notification1.wav');
+const audio2 = new Audio('/notification2.mp3');
+const audio3 = new Audio('/notification3.mp3');
+const audio4 = new Audio('/notification4.mp3');
+function unlockAudio() {
+  [audio1, audio2, audio3, audio4].forEach(audio => {
+    audio.play().then(() => {
+      audio.pause();
+      audio.currentTime = 0;
+    }).catch(error => {
+      console.error('Audio unlock failed:', error);
+    });
+  });
+  document.body.removeEventListener('touchstart', unlockAudio);
+  document.body.removeEventListener('click', unlockAudio);
+}
+document.body.addEventListener('touchstart', unlockAudio, false);
+document.body.addEventListener('click', unlockAudio, false);
+
+export const playSound = () => {
+  audio1.volume = 0.2;
+  audio1.play();
 }
 
-
-//play sound exit talkingChannel
-export const playSound2 = ()=>{
-  const audio = new Audio('/notification2.mp3');
-  audio.volume = 0.2;
-  audio.play();
+export const playSound2 = () => {
+  audio2.volume = 0.2;
+  audio2.play();
 }
 
-
-//play sound exit talkingChannel
-export const playSound3 = ()=>{
-  const audio = new Audio('/notification3.mp3');
-  audio.volume = 0.7;
-  audio.play();
+export const playSound3 = () => {
+  audio3.volume = 0.2;
+  audio3.play();
 }
 
-export const playSound4 = ()=>{
-  const audio = new Audio('/notification4.mp3');
-  audio.volume = 0.7;
-  audio.play();
+export const playSound4 = () => {
+  audio4.volume = 0.2;
+  audio4.play();
 }
+
+// export const playSound = ()=>{
+//   const audio = new Audio('/notification1.wav');
+//   audio.volume = 0.2;
+//   audio.play();
+// }
+
+
+// //play sound exit talkingChannel
+// export const playSound2 = ()=>{
+//   const audio = new Audio('/notification2.mp3');
+//   audio.volume = 0.2;
+//   audio.play();
+// }
+
+
+// //play sound exit talkingChannel
+// export const playSound3 = ()=>{
+//   const audio = new Audio('/notification3.mp3');
+//   audio.volume = 0.7;
+//   audio.play();
+// }
+
+// export const playSound4 = ()=>{
+//   const audio = new Audio('/notification4.mp3');
+//   audio.volume = 0.7;
+//   audio.play();
+// }
 
 
