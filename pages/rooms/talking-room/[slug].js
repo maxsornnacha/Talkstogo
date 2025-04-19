@@ -1138,7 +1138,9 @@ export default function talkingroom(){
              navigator.mediaDevices.getUserMedia({audio:audioInput?
                {
                  deviceId:{exact:audioInput},
-                 echoCancellation: true 
+                  echoCancellation: true,
+                  noiseSuppression: true,
+                  autoGainControl: true
                }
                :
                { echoCancellation: true }
