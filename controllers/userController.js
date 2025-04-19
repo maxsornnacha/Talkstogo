@@ -75,7 +75,7 @@ const transporter = nodemailer.createTransport({
 
 exports.createAccount = async (req,res)=>{
     const {firstname,lastname,username,password,email} = req.body
-    const image = 'https://res.cloudinary.com/dakcwd8ki/image/upload/v1707512097/wwfulsac153rtabq45as.png'
+    const image = 'https://res.cloudinary.com/dakcwd8ki/image/upload/v1716573817/default-images/u1hpxlplwpgcusumfjnj.png'
     const passwordHashed = await bcrypt.hash(password,10)
     let statusDisplay = ''
     let errorMessage = ''
