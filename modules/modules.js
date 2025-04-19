@@ -135,47 +135,39 @@ export const websitePath = async (message) => {
   return null;
 };
 
+// Define a class to manage multiple audio channels for a single sound
+class SoundPool {
+  constructor(src, poolSize = 5, volume = 0.2) {
+    this.pool = [];
+    this.index = 0;
+    for (let i = 0; i < poolSize; i++) {
+      const audio = new Audio(src);
+      audio.volume = volume;
+      this.pool.push(audio);
+    }
+  }
 
-
-//play sound Notifications
-const audio1 = new Audio('/notification1.wav');
-const audio2 = new Audio('/notification2.mp3');
-const audio3 = new Audio('/notification3.mp3');
-const audio4 = new Audio('/notification4.mp3');
-function unlockAudio() {
-  [audio1, audio2, audio3, audio4].forEach(audio => {
-    audio.play().then(() => {
-      audio.pause();
-      audio.currentTime = 0;
-    }).catch(error => {
-      console.error('Audio unlock failed:', error);
+  play() {
+    const audio = this.pool[this.index];
+    audio.currentTime = 0;
+    audio.play().catch((err) => {
+      console.error('Audio playback failed:', err);
     });
-  });
-  document.body.removeEventListener('touchstart', unlockAudio);
-  document.body.removeEventListener('click', unlockAudio);
-}
-document.body.addEventListener('touchstart', unlockAudio, false);
-document.body.addEventListener('click', unlockAudio, false);
-
-export const playSound = () => {
-  audio1.volume = 0.2;
-  audio1.play();
+    this.index = (this.index + 1) % this.pool.length;
+  }
 }
 
-export const playSound2 = () => {
-  audio2.volume = 0.2;
-  audio2.play();
-}
+// Initialize sound pools for each notification sound
+const sound1 = new SoundPool('/notification1.wav', 5, 0.2);
+const sound2 = new SoundPool('/notification2.mp3', 5, 0.2);
+const sound3 = new SoundPool('/notification3.mp3', 5, 0.7);
+const sound4 = new SoundPool('/notification4.mp3', 5, 0.7);
 
-export const playSound3 = () => {
-  audio3.volume = 0.2;
-  audio3.play();
-}
-
-export const playSound4 = () => {
-  audio4.volume = 0.2;
-  audio4.play();
-}
+// Export functions to play each sound
+export const playSound = () => sound1.play();
+export const playSound2 = () => sound2.play();
+export const playSound3 = () => sound3.play();
+export const playSound4 = () => sound4.play();
 
 // export const playSound = ()=>{
 //   const audio = new Audio('/notification1.wav');
