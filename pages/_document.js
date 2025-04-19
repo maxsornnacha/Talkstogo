@@ -6,7 +6,7 @@ export default function Document() {
     <Html lang="en">
       <Head />
       <link rel="apple-touch-icon" sizes="60*60" href="/logo.jpg" />
-      <link rel="icon" href="/icon/logo.jpg" />
+      <link rel="icon" href="/logo.jpg" />
       <body>
         <Main />
         <NextScript />
