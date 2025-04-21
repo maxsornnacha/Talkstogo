@@ -34,7 +34,13 @@ app.use(express.json());
 
 
 const corsOptions = {
-    origin: '*',
+        origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, origin); // return the actual origin, not "*"
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false,
