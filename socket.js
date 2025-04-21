@@ -8,10 +8,12 @@ require('dotenv').config()
 const {Server} = require('socket.io')
 const httpServer  = createServer(app)
 //Config socket to cross and connect with front-end client
-const io = new Server(httpServer,{
-      origin: [process.env.CLIENT_URL, process.env.CLIENT_URL_1],
-      methods: ['GET', 'POST'],
-      credentials: true,
+const io = new Server(httpServer, {
+  cors: {
+    origin: [process.env.CLIENT_URL, process.env.CLIENT_URL_1],
+    methods: ['GET', 'POST'],
+    credentials: true,
+  }
 });
 
 
