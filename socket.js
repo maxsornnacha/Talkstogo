@@ -9,7 +9,7 @@ const {Server} = require('socket.io')
 const httpServer  = createServer(app)
 //Config socket to cross and connect with front-end client
 const io = new Server(httpServer,{
-      origin: true,
+      origin: [process.env.CLIENT_URL, process.env.CLIENT_URL_1],
       methods: ['GET', 'POST'],
       credentials: true,
 });
