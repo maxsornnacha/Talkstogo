@@ -9,8 +9,14 @@ const {Server} = require('socket.io')
 const httpServer  = createServer(app)
 //Config socket to cross and connect with front-end client
 const io = new Server(httpServer,{
-    cors: {
-      origin: '*',
+        cors: {
+          origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, origin); // return the actual origin, not "*"
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     }
