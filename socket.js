@@ -12,7 +12,6 @@ const io = new Server(httpServer,{
       origin: true,
       methods: ['GET', 'POST'],
       credentials: true,
-    }
 });
 
 
